@@ -1,6 +1,9 @@
 package domain
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 type User struct {
 	ID           string
@@ -12,7 +15,7 @@ type User struct {
 }
 
 type UserRepository interface {
-	Create(user *User) error
-	FindByID(id string) (*User, error)
-	FindByEmail(email string) (*User, error)
+	Create(ctx context.Context, user *User) error
+	FindByID(ctx context.Context, id string) (*User, error)
+	FindByEmail(ctx context.Context, email string) (*User, error)
 }
