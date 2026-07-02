@@ -15,11 +15,6 @@ import 'dart:convert' as $convert;
 import 'dart:core' as $core;
 import 'dart:typed_data' as $typed_data;
 
-import 'package:protobuf/well_known_types/google/protobuf/timestamp.pbjson.dart'
-    as $1;
-
-import 'common.pbjson.dart' as $0;
-
 @$core.Deprecated('Use registerRequestDescriptor instead')
 const RegisterRequest$json = {
   '1': 'RegisterRequest',
@@ -159,44 +154,13 @@ final $typed_data.Uint8List refreshTokenResponseDescriptor = $convert.base64Deco
     'IQcmVmcmVzaEV4cGlyZXNBdBIlCgR1c2VyGAUgASgLMhEuZmluZGlhcnkudjEuVXNlclIEdXNl'
     'cg==');
 
-const $core.Map<$core.String, $core.dynamic> AuthServiceBase$json = {
+const AuthServiceBase$json = {
   '1': 'AuthService',
   '2': [
-    {
-      '1': 'Register',
-      '2': '.findiary.v1.RegisterRequest',
-      '3': '.findiary.v1.RegisterResponse'
-    },
-    {
-      '1': 'Login',
-      '2': '.findiary.v1.LoginRequest',
-      '3': '.findiary.v1.LoginResponse'
-    },
-    {
-      '1': 'RefreshToken',
-      '2': '.findiary.v1.RefreshTokenRequest',
-      '3': '.findiary.v1.RefreshTokenResponse'
-    },
+    {'1': 'Register', '2': '.findiary.v1.RegisterRequest', '3': '.findiary.v1.RegisterResponse'},
+    {'1': 'Login', '2': '.findiary.v1.LoginRequest', '3': '.findiary.v1.LoginResponse'},
+    {'1': 'RefreshToken', '2': '.findiary.v1.RefreshTokenRequest', '3': '.findiary.v1.RefreshTokenResponse'},
   ],
 };
 
-@$core.Deprecated('Use authServiceDescriptor instead')
-const $core.Map<$core.String, $core.Map<$core.String, $core.dynamic>>
-    AuthServiceBase$messageJson = {
-  '.findiary.v1.RegisterRequest': RegisterRequest$json,
-  '.findiary.v1.RegisterResponse': RegisterResponse$json,
-  '.findiary.v1.User': $0.User$json,
-  '.google.protobuf.Timestamp': $1.Timestamp$json,
-  '.findiary.v1.LoginRequest': LoginRequest$json,
-  '.findiary.v1.LoginResponse': LoginResponse$json,
-  '.findiary.v1.RefreshTokenRequest': RefreshTokenRequest$json,
-  '.findiary.v1.RefreshTokenResponse': RefreshTokenResponse$json,
-};
-
-/// Descriptor for `AuthService`. Decode as a `google.protobuf.ServiceDescriptorProto`.
-final $typed_data.Uint8List authServiceDescriptor = $convert.base64Decode(
-    'CgtBdXRoU2VydmljZRJHCghSZWdpc3RlchIcLmZpbmRpYXJ5LnYxLlJlZ2lzdGVyUmVxdWVzdB'
-    'odLmZpbmRpYXJ5LnYxLlJlZ2lzdGVyUmVzcG9uc2USPgoFTG9naW4SGS5maW5kaWFyeS52MS5M'
-    'b2dpblJlcXVlc3QaGi5maW5kaWFyeS52MS5Mb2dpblJlc3BvbnNlElMKDFJlZnJlc2hUb2tlbh'
-    'IgLmZpbmRpYXJ5LnYxLlJlZnJlc2hUb2tlblJlcXVlc3QaIS5maW5kaWFyeS52MS5SZWZyZXNo'
-    'VG9rZW5SZXNwb25zZQ==');
+const $core.Map<$core.String, $core.Map<$core.String, $core.dynamic>> AuthServiceBase$messageJson = {};

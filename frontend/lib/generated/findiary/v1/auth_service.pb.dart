@@ -10,13 +10,12 @@
 // ignore_for_file: deprecated_member_use_from_same_package, library_prefixes
 // ignore_for_file: non_constant_identifier_names, prefer_relative_imports
 
-import 'dart:async' as $async;
 import 'dart:core' as $core;
 
 import 'package:fixnum/fixnum.dart' as $fixnum;
 import 'package:protobuf/protobuf.dart' as $pb;
 
-import 'common.pb.dart' as $0;
+import 'common.pb.dart' as $1;
 
 export 'package:protobuf/protobuf.dart' show GeneratedMessageGenericExtensions;
 
@@ -224,7 +223,7 @@ class RegisterResponse extends $pb.GeneratedMessage {
     $core.String? refreshToken,
     $fixnum.Int64? accessExpiresAt,
     $fixnum.Int64? refreshExpiresAt,
-    $0.User? user,
+    $1.User? user,
   }) {
     final result = create();
     if (accessToken != null) result.accessToken = accessToken;
@@ -252,7 +251,7 @@ class RegisterResponse extends $pb.GeneratedMessage {
     ..aOS(2, _omitFieldNames ? '' : 'refreshToken')
     ..aInt64(3, _omitFieldNames ? '' : 'accessExpiresAt')
     ..aInt64(4, _omitFieldNames ? '' : 'refreshExpiresAt')
-    ..aOM<$0.User>(5, _omitFieldNames ? '' : 'user', subBuilder: $0.User.create)
+    ..aOM<$1.User>(5, _omitFieldNames ? '' : 'user', subBuilder: $1.User.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -311,15 +310,15 @@ class RegisterResponse extends $pb.GeneratedMessage {
   void clearRefreshExpiresAt() => $_clearField(4);
 
   @$pb.TagNumber(5)
-  $0.User get user => $_getN(4);
+  $1.User get user => $_getN(4);
   @$pb.TagNumber(5)
-  set user($0.User value) => $_setField(5, value);
+  set user($1.User value) => $_setField(5, value);
   @$pb.TagNumber(5)
   $core.bool hasUser() => $_has(4);
   @$pb.TagNumber(5)
   void clearUser() => $_clearField(5);
   @$pb.TagNumber(5)
-  $0.User ensureUser() => $_ensure(4);
+  $1.User ensureUser() => $_ensure(4);
 }
 
 class LoginResponse extends $pb.GeneratedMessage {
@@ -328,7 +327,7 @@ class LoginResponse extends $pb.GeneratedMessage {
     $core.String? refreshToken,
     $fixnum.Int64? accessExpiresAt,
     $fixnum.Int64? refreshExpiresAt,
-    $0.User? user,
+    $1.User? user,
   }) {
     final result = create();
     if (accessToken != null) result.accessToken = accessToken;
@@ -356,7 +355,7 @@ class LoginResponse extends $pb.GeneratedMessage {
     ..aOS(2, _omitFieldNames ? '' : 'refreshToken')
     ..aInt64(3, _omitFieldNames ? '' : 'accessExpiresAt')
     ..aInt64(4, _omitFieldNames ? '' : 'refreshExpiresAt')
-    ..aOM<$0.User>(5, _omitFieldNames ? '' : 'user', subBuilder: $0.User.create)
+    ..aOM<$1.User>(5, _omitFieldNames ? '' : 'user', subBuilder: $1.User.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -415,15 +414,15 @@ class LoginResponse extends $pb.GeneratedMessage {
   void clearRefreshExpiresAt() => $_clearField(4);
 
   @$pb.TagNumber(5)
-  $0.User get user => $_getN(4);
+  $1.User get user => $_getN(4);
   @$pb.TagNumber(5)
-  set user($0.User value) => $_setField(5, value);
+  set user($1.User value) => $_setField(5, value);
   @$pb.TagNumber(5)
   $core.bool hasUser() => $_has(4);
   @$pb.TagNumber(5)
   void clearUser() => $_clearField(5);
   @$pb.TagNumber(5)
-  $0.User ensureUser() => $_ensure(4);
+  $1.User ensureUser() => $_ensure(4);
 }
 
 class RefreshTokenResponse extends $pb.GeneratedMessage {
@@ -432,7 +431,7 @@ class RefreshTokenResponse extends $pb.GeneratedMessage {
     $core.String? refreshToken,
     $fixnum.Int64? accessExpiresAt,
     $fixnum.Int64? refreshExpiresAt,
-    $0.User? user,
+    $1.User? user,
   }) {
     final result = create();
     if (accessToken != null) result.accessToken = accessToken;
@@ -460,7 +459,7 @@ class RefreshTokenResponse extends $pb.GeneratedMessage {
     ..aOS(2, _omitFieldNames ? '' : 'refreshToken')
     ..aInt64(3, _omitFieldNames ? '' : 'accessExpiresAt')
     ..aInt64(4, _omitFieldNames ? '' : 'refreshExpiresAt')
-    ..aOM<$0.User>(5, _omitFieldNames ? '' : 'user', subBuilder: $0.User.create)
+    ..aOM<$1.User>(5, _omitFieldNames ? '' : 'user', subBuilder: $1.User.create)
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -519,34 +518,15 @@ class RefreshTokenResponse extends $pb.GeneratedMessage {
   void clearRefreshExpiresAt() => $_clearField(4);
 
   @$pb.TagNumber(5)
-  $0.User get user => $_getN(4);
+  $1.User get user => $_getN(4);
   @$pb.TagNumber(5)
-  set user($0.User value) => $_setField(5, value);
+  set user($1.User value) => $_setField(5, value);
   @$pb.TagNumber(5)
   $core.bool hasUser() => $_has(4);
   @$pb.TagNumber(5)
   void clearUser() => $_clearField(5);
   @$pb.TagNumber(5)
-  $0.User ensureUser() => $_ensure(4);
-}
-
-class AuthServiceApi {
-  final $pb.RpcClient _client;
-
-  AuthServiceApi(this._client);
-
-  $async.Future<RegisterResponse> register(
-          $pb.ClientContext? ctx, RegisterRequest request) =>
-      _client.invoke<RegisterResponse>(
-          ctx, 'AuthService', 'Register', request, RegisterResponse());
-  $async.Future<LoginResponse> login(
-          $pb.ClientContext? ctx, LoginRequest request) =>
-      _client.invoke<LoginResponse>(
-          ctx, 'AuthService', 'Login', request, LoginResponse());
-  $async.Future<RefreshTokenResponse> refreshToken(
-          $pb.ClientContext? ctx, RefreshTokenRequest request) =>
-      _client.invoke<RefreshTokenResponse>(
-          ctx, 'AuthService', 'RefreshToken', request, RefreshTokenResponse());
+  $1.User ensureUser() => $_ensure(4);
 }
 
 const $core.bool _omitFieldNames =

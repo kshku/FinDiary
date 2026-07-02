@@ -8,3 +8,4 @@ plugins:
     opt: paths=source_relative
   - local: protoc-gen-dart
     out: ../frontend/lib/generated
+    opt: grpc
