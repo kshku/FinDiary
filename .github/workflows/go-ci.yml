@@ -1,0 +1,42 @@
+name: Go CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, develop]
+    paths: ['backend/**']
+  pull_request:
+    branches: [main]
+    paths: ['backend/**']
+
+env:
+  GO_VERSION: '1.22'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: findiary
+          POSTGRES_PASSWORD: findiary_dev
+          POSTGRES_DB: findiary_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - run: go mod download
+        working-directory: backend
+      - run: go test ./... -v -count=1
+        working-directory: backend
+        env:
+          TEST_DATABASE_URL: postgres://findiary:findiary_dev@localhost:5432/findiary_test?sslmode=disable
