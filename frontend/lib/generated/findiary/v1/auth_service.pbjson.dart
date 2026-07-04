@@ -153,14 +153,3 @@ final $typed_data.Uint8List refreshTokenResponseDescriptor = $convert.base64Deco
     'c19hdBgDIAEoA1IPYWNjZXNzRXhwaXJlc0F0EiwKEnJlZnJlc2hfZXhwaXJlc19hdBgEIAEoA1'
     'IQcmVmcmVzaEV4cGlyZXNBdBIlCgR1c2VyGAUgASgLMhEuZmluZGlhcnkudjEuVXNlclIEdXNl'
     'cg==');
-
-const AuthServiceBase$json = {
-  '1': 'AuthService',
-  '2': [
-    {'1': 'Register', '2': '.findiary.v1.RegisterRequest', '3': '.findiary.v1.RegisterResponse'},
-    {'1': 'Login', '2': '.findiary.v1.LoginRequest', '3': '.findiary.v1.LoginResponse'},
-    {'1': 'RefreshToken', '2': '.findiary.v1.RefreshTokenRequest', '3': '.findiary.v1.RefreshTokenResponse'},
-  ],
-};
-
-const $core.Map<$core.String, $core.Map<$core.String, $core.dynamic>> AuthServiceBase$messageJson = {};

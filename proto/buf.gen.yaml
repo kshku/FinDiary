@@ -6,6 +6,6 @@ plugins:
   - local: protoc-gen-connect-go
     out: ../backend/internal/api
     opt: paths=source_relative
-  - local: protoc-gen-dart
+  - local: /home/kshku/.pub-cache/bin/protoc-gen-dart
     out: ../frontend/lib/generated
     opt: grpc
