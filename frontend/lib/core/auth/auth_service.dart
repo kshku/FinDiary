@@ -10,10 +10,9 @@ class AuthService {
   late final AuthServiceClient _stub;
 
   AuthService({
-    required GrpcClient grpcClient,
-    required TokenStorage tokenStorage,
-  })  : _grpcClient = grpcClient,
-        _tokenStorage = tokenStorage {
+    required this._grpcClient,
+    required this._tokenStorage,
+  }) {
     _stub = AuthServiceClient(
       _grpcClient.channel,
       interceptors: [_grpcClient.authInterceptor],

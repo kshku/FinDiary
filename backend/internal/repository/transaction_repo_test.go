@@ -20,7 +20,7 @@ func TestTransactionRepo_CreateAndFind(t *testing.T) {
 	user := createTestUser(t, ctx, db)
 	cat := createTestCategory(t, ctx, db)
 
-	now := time.Now().UTC().Format(time.RFC3339Nano)
+	now := time.Now().UTC().Truncate(time.Microsecond).Format(time.RFC3339Nano)
 	desc := "test transaction"
 	tx := &domain.Transaction{
 		ID:          uuid.New().String(),
@@ -65,7 +65,7 @@ func TestTransactionRepo_SoftDelete(t *testing.T) {
 	user := createTestUser(t, ctx, db)
 	cat := createTestCategory(t, ctx, db)
 
-	now := time.Now().UTC().Format(time.RFC3339Nano)
+	now := time.Now().UTC().Truncate(time.Microsecond).Format(time.RFC3339Nano)
 	tx := &domain.Transaction{
 		ID:         uuid.New().String(),
 		CreatedBy:  user.ID,
@@ -94,7 +94,7 @@ func TestTransactionRepo_ListWithFilters(t *testing.T) {
 	user := createTestUser(t, ctx, db)
 	cat := createTestCategory(t, ctx, db)
 
-	now := time.Now().UTC().Format(time.RFC3339Nano)
+	now := time.Now().UTC().Truncate(time.Microsecond).Format(time.RFC3339Nano)
 
 	tx1 := &domain.Transaction{
 		ID:         uuid.New().String(),
@@ -155,7 +155,7 @@ func TestTransactionRepo_ListPagination(t *testing.T) {
 	user := createTestUser(t, ctx, db)
 	cat := createTestCategory(t, ctx, db)
 
-	now := time.Now().UTC().Format(time.RFC3339Nano)
+	now := time.Now().UTC().Truncate(time.Microsecond).Format(time.RFC3339Nano)
 
 	for i := 0; i < 5; i++ {
 		tx := &domain.Transaction{
@@ -199,7 +199,7 @@ func TestTransactionRepo_SoftDeleteNotFound(t *testing.T) {
 func createTestCategory(t *testing.T, ctx context.Context, db *pgxpool.Pool) *domain.Category {
 	t.Helper()
 	catRepo := repository.NewCategoryRepo(db)
-	now := time.Now().UTC().Format(time.RFC3339Nano)
+	now := time.Now().UTC().Truncate(time.Microsecond).Format(time.RFC3339Nano)
 	cat := &domain.Category{
 		ID:        uuid.New().String(),
 		Scope:     "personal",

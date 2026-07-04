@@ -6,9 +6,8 @@ import 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthService _authService;
 
-  AuthBloc({required AuthService authService})
-      : _authService = authService,
-        super(const AuthState()) {
+  AuthBloc({required this._authService})
+      : super(const AuthState()) {
     on<AuthCheckRequested>(_onCheckRequested);
     on<LoginSubmitted>(_onLoginSubmitted);
     on<RegisterSubmitted>(_onRegisterSubmitted);

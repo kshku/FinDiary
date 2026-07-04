@@ -17,7 +17,7 @@ func TestFamilyRepo_CreateAndFind(t *testing.T) {
 	ctx := context.Background()
 
 	user := createTestUser(t, ctx, db)
-	now := time.Now().UTC().Format(time.RFC3339Nano)
+	now := time.Now().UTC().Truncate(time.Microsecond).Format(time.RFC3339Nano)
 
 	family := &domain.Family{
 		ID:        uuid.New().String(),
@@ -55,7 +55,7 @@ func TestFamilyRepo_AddAndListMembers(t *testing.T) {
 	owner := createTestUser(t, ctx, db)
 	member := createTestUser(t, ctx, db)
 
-	now := time.Now().UTC().Format(time.RFC3339Nano)
+	now := time.Now().UTC().Truncate(time.Microsecond).Format(time.RFC3339Nano)
 	family := &domain.Family{
 		ID:        uuid.New().String(),
 		Name:      "Test Family",
@@ -99,7 +99,7 @@ func TestFamilyRepo_AddMemberDuplicate(t *testing.T) {
 	owner := createTestUser(t, ctx, db)
 	member := createTestUser(t, ctx, db)
 
-	now := time.Now().UTC().Format(time.RFC3339Nano)
+	now := time.Now().UTC().Truncate(time.Microsecond).Format(time.RFC3339Nano)
 	family := &domain.Family{
 		ID:        uuid.New().String(),
 		Name:      "Test Family",
@@ -127,7 +127,7 @@ func TestFamilyRepo_ListByUser(t *testing.T) {
 	ctx := context.Background()
 
 	user := createTestUser(t, ctx, db)
-	now := time.Now().UTC().Format(time.RFC3339Nano)
+	now := time.Now().UTC().Truncate(time.Microsecond).Format(time.RFC3339Nano)
 
 	family1 := &domain.Family{
 		ID:        uuid.New().String(),
@@ -176,7 +176,7 @@ func TestFamilyRepo_RemoveMember(t *testing.T) {
 	owner := createTestUser(t, ctx, db)
 	member := createTestUser(t, ctx, db)
 
-	now := time.Now().UTC().Format(time.RFC3339Nano)
+	now := time.Now().UTC().Truncate(time.Microsecond).Format(time.RFC3339Nano)
 	family := &domain.Family{
 		ID:        uuid.New().String(),
 		Name:      "Test Family",
@@ -211,7 +211,7 @@ func TestFamilyRepo_Invitations(t *testing.T) {
 	ctx := context.Background()
 
 	owner := createTestUser(t, ctx, db)
-	now := time.Now().UTC().Format(time.RFC3339Nano)
+	now := time.Now().UTC().Truncate(time.Microsecond).Format(time.RFC3339Nano)
 
 	family := &domain.Family{
 		ID:        uuid.New().String(),
@@ -230,7 +230,7 @@ func TestFamilyRepo_Invitations(t *testing.T) {
 		Status:    "pending",
 		CreatedBy: owner.ID,
 		CreatedAt: now,
-		ExpiresAt: time.Now().UTC().Add(24 * time.Hour).Format(time.RFC3339Nano),
+		ExpiresAt: time.Now().UTC().Truncate(time.Microsecond).Add(24 * time.Hour).Format(time.RFC3339Nano),
 	}
 
 	err := familyRepo.CreateInvitation(ctx, inv)
@@ -269,7 +269,7 @@ func TestFamilyRepo_Update(t *testing.T) {
 	ctx := context.Background()
 
 	user := createTestUser(t, ctx, db)
-	now := time.Now().UTC().Format(time.RFC3339Nano)
+	now := time.Now().UTC().Truncate(time.Microsecond).Format(time.RFC3339Nano)
 
 	family := &domain.Family{
 		ID:        uuid.New().String(),
@@ -281,7 +281,7 @@ func TestFamilyRepo_Update(t *testing.T) {
 	require.NoError(t, familyRepo.Create(ctx, family))
 
 	family.Name = "Updated Name"
-	family.UpdatedAt = time.Now().UTC().Format(time.RFC3339Nano)
+	family.UpdatedAt = time.Now().UTC().Truncate(time.Microsecond).Format(time.RFC3339Nano)
 	err := familyRepo.Update(ctx, family)
 	require.NoError(t, err)
 

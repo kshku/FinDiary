@@ -34,7 +34,7 @@ func (r *TransactionRepo) Create(ctx context.Context, tx *domain.Transaction) er
 func (r *TransactionRepo) FindByID(ctx context.Context, id string) (*domain.Transaction, error) {
 	row := r.pool.QueryRow(ctx,
 		`SELECT id, family_id, created_by, type, amount, currency, category_id, description, date, created_at, updated_at, deleted_at
-		 FROM transactions WHERE id = $1`, id)
+		 FROM transactions WHERE id = $1 AND deleted_at IS NULL`, id)
 	return scanTransaction(row)
 }
 
@@ -154,10 +154,10 @@ func scanTransaction(row scannable) (*domain.Transaction, error) {
 	}
 	t.Amount = amount
 	t.Date = date.Format("2006-01-02")
-	t.CreatedAt = createdAt.Format(time.RFC3339Nano)
-	t.UpdatedAt = updatedAt.Format(time.RFC3339Nano)
+	t.CreatedAt = createdAt.UTC().Format(time.RFC3339Nano)
+	t.UpdatedAt = updatedAt.UTC().Format(time.RFC3339Nano)
 	if deletedAt != nil {
-		s := deletedAt.Format(time.RFC3339Nano)
+		s := deletedAt.UTC().Format(time.RFC3339Nano)
 		t.DeletedAt = &s
 	}
 	return &t, nil

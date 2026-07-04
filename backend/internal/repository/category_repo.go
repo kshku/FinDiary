@@ -120,7 +120,7 @@ func scanCategory(row scannable) (*domain.Category, error) {
 		}
 		return nil, fmt.Errorf("scan category: %w", err)
 	}
-	c.CreatedAt = createdAt.Format(time.RFC3339Nano)
-	c.UpdatedAt = updatedAt.Format(time.RFC3339Nano)
+	c.CreatedAt = createdAt.UTC().Format(time.RFC3339Nano)
+	c.UpdatedAt = updatedAt.UTC().Format(time.RFC3339Nano)
 	return &c, nil
 }

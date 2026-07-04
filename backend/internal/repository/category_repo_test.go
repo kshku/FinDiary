@@ -16,7 +16,7 @@ func TestCategoryRepo_CreateAndFind(t *testing.T) {
 	repo := repository.NewCategoryRepo(db)
 	ctx := context.Background()
 
-	now := time.Now().UTC().Format(time.RFC3339Nano)
+	now := time.Now().UTC().Truncate(time.Microsecond).Format(time.RFC3339Nano)
 	cat := &domain.Category{
 		ID:        uuid.New().String(),
 		Scope:     "personal",
@@ -57,7 +57,7 @@ func TestCategoryRepo_List(t *testing.T) {
 	repo := repository.NewCategoryRepo(db)
 	ctx := context.Background()
 
-	now := time.Now().UTC().Format(time.RFC3339Nano)
+	now := time.Now().UTC().Truncate(time.Microsecond).Format(time.RFC3339Nano)
 
 	cat1 := &domain.Category{
 		ID:        uuid.New().String(),
@@ -115,7 +115,7 @@ func TestCategoryRepo_Delete(t *testing.T) {
 	repo := repository.NewCategoryRepo(db)
 	ctx := context.Background()
 
-	now := time.Now().UTC().Format(time.RFC3339Nano)
+	now := time.Now().UTC().Truncate(time.Microsecond).Format(time.RFC3339Nano)
 	cat := &domain.Category{
 		ID:        uuid.New().String(),
 		Scope:     "personal",
@@ -138,7 +138,7 @@ func TestCategoryRepo_Update(t *testing.T) {
 	repo := repository.NewCategoryRepo(db)
 	ctx := context.Background()
 
-	now := time.Now().UTC().Format(time.RFC3339Nano)
+	now := time.Now().UTC().Truncate(time.Microsecond).Format(time.RFC3339Nano)
 	cat := &domain.Category{
 		ID:        uuid.New().String(),
 		Scope:     "personal",

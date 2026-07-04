@@ -234,8 +234,8 @@ func scanFamily(row scannable) (*domain.Family, error) {
 		}
 		return nil, fmt.Errorf("scan family: %w", err)
 	}
-	f.CreatedAt = createdAt.Format(time.RFC3339Nano)
-	f.UpdatedAt = updatedAt.Format(time.RFC3339Nano)
+	f.CreatedAt = createdAt.UTC().Format(time.RFC3339Nano)
+	f.UpdatedAt = updatedAt.UTC().Format(time.RFC3339Nano)
 	return &f, nil
 }
 
@@ -250,7 +250,7 @@ func scanFamilyMember(row scannable) (*domain.FamilyMember, error) {
 		}
 		return nil, fmt.Errorf("scan family member: %w", err)
 	}
-	fm.JoinedAt = joinedAt.Format(time.RFC3339Nano)
+	fm.JoinedAt = joinedAt.UTC().Format(time.RFC3339Nano)
 	if invitedBy != nil {
 		fm.InvitedBy = *invitedBy
 	}
@@ -267,7 +267,7 @@ func scanInvitation(row scannable) (*domain.Invitation, error) {
 		}
 		return nil, fmt.Errorf("scan invitation: %w", err)
 	}
-	inv.CreatedAt = createdAt.Format(time.RFC3339Nano)
-	inv.ExpiresAt = expiresAt.Format(time.RFC3339Nano)
+	inv.CreatedAt = createdAt.UTC().Format(time.RFC3339Nano)
+	inv.ExpiresAt = expiresAt.UTC().Format(time.RFC3339Nano)
 	return &inv, nil
 }
