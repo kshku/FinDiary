@@ -7,4 +7,5 @@ var (
 	ErrAlreadyExists = errors.New("already exists")
 	ErrInvalidInput  = errors.New("invalid input")
 	ErrUnauthorized  = errors.New("unauthorized")
+	ErrForbidden     = errors.New("forbidden")
 )

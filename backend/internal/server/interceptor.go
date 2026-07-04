@@ -20,6 +20,20 @@ var publicProcedures = map[string]bool{
 	"/findiary.v1.AuthService/RefreshToken": true,
 }
 
+func UserIDFromContext(ctx context.Context) string {
+	if v, ok := ctx.Value(userIDKey).(string); ok {
+		return v
+	}
+	return ""
+}
+
+func UserEmailFromContext(ctx context.Context) string {
+	if v, ok := ctx.Value(userEmailKey).(string); ok {
+		return v
+	}
+	return ""
+}
+
 func AuthInterceptor(mgr *jwt.Manager) connect.UnaryInterceptorFunc {
 	return func(next connect.UnaryFunc) connect.UnaryFunc {
 		return func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
