@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package findiary.v1;
+
+option go_package = "github.com/kshku/findiary/backend/internal/api/findiary/v1";
+
+import "findiary/v1/common.proto";
+import "google/protobuf/empty.proto";
+
+message CreateTransactionRequest {
+  optional string family_id = 1;
+  string type = 2;
+  double amount = 3;
+  string currency = 4;
+  string category_id = 5;
+  optional string description = 6;
+  string date = 7;
+}
+
+message CreateTransactionResponse {
+  Transaction transaction = 1;
+}
+
+message GetTransactionRequest {
+  string id = 1;
+}
+
+message GetTransactionResponse {
+  Transaction transaction = 1;
+}
+
+message UpdateTransactionRequest {
+  string id = 1;
+  string type = 2;
+  double amount = 3;
+  string currency = 4;
+  string category_id = 5;
+  optional string description = 6;
+  string date = 7;
+}
+
+message UpdateTransactionResponse {
+  Transaction transaction = 1;
+}
+
+message DeleteTransactionRequest {
+  string id = 1;
+}
+
+message DeleteTransactionResponse {}
+
+message ListTransactionsRequest {
+  optional string family_id = 1;
+  string type = 2;
+  string category_id = 3;
+  string start_date = 4;
+  string end_date = 5;
+  int32 page_size = 6;
+  int32 page_token = 7;
+}
+
+message ListTransactionsResponse {
+  repeated Transaction transactions = 1;
+  int32 total = 2;
+  int32 next_page_token = 3;
+}
+
+service TransactionService {
+  rpc CreateTransaction(CreateTransactionRequest) returns (CreateTransactionResponse);
+  rpc GetTransaction(GetTransactionRequest) returns (GetTransactionResponse);
+  rpc UpdateTransaction(UpdateTransactionRequest) returns (UpdateTransactionResponse);
+  rpc DeleteTransaction(DeleteTransactionRequest) returns (DeleteTransactionResponse);
+  rpc ListTransactions(ListTransactionsRequest) returns (ListTransactionsResponse);
+}

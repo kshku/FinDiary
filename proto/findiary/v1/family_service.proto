@@ -1,0 +1,109 @@
+syntax = "proto3";
+
+package findiary.v1;
+
+option go_package = "github.com/kshku/findiary/backend/internal/api/findiary/v1";
+
+import "findiary/v1/common.proto";
+import "google/protobuf/empty.proto";
+
+message CreateFamilyRequest {
+  string name = 1;
+}
+
+message CreateFamilyResponse {
+  Family family = 1;
+}
+
+message GetFamilyRequest {
+  string id = 1;
+}
+
+message GetFamilyResponse {
+  Family family = 1;
+}
+
+message UpdateFamilyRequest {
+  string id = 1;
+  string name = 2;
+}
+
+message UpdateFamilyResponse {
+  Family family = 1;
+}
+
+message ListMyFamiliesResponse {
+  repeated Family families = 1;
+}
+
+message AddMemberRequest {
+  string family_id = 1;
+  string user_id = 2;
+  string role = 3;
+}
+
+message AddMemberResponse {
+  FamilyMember member = 1;
+}
+
+message RemoveMemberRequest {
+  string family_id = 1;
+  string user_id = 2;
+}
+
+message RemoveMemberResponse {}
+
+message InviteMemberRequest {
+  string family_id = 1;
+  string email = 2;
+}
+
+message InviteMemberResponse {
+  Invitation invitation = 1;
+}
+
+message AcceptInvitationRequest {
+  string code = 1;
+}
+
+message AcceptInvitationResponse {
+  FamilyMember member = 1;
+}
+
+message RevokeInvitationRequest {
+  string id = 1;
+}
+
+message RevokeInvitationResponse {
+  Invitation invitation = 1;
+}
+
+message ListInvitationsRequest {
+  string family_id = 1;
+}
+
+message ListInvitationsResponse {
+  repeated Invitation invitations = 1;
+}
+
+message ListMembersRequest {
+  string family_id = 1;
+}
+
+message ListMembersResponse {
+  repeated FamilyMember members = 1;
+}
+
+service FamilyService {
+  rpc CreateFamily(CreateFamilyRequest) returns (CreateFamilyResponse);
+  rpc GetFamily(GetFamilyRequest) returns (GetFamilyResponse);
+  rpc UpdateFamily(UpdateFamilyRequest) returns (UpdateFamilyResponse);
+  rpc ListMyFamilies(google.protobuf.Empty) returns (ListMyFamiliesResponse);
+  rpc AddMember(AddMemberRequest) returns (AddMemberResponse);
+  rpc RemoveMember(RemoveMemberRequest) returns (RemoveMemberResponse);
+  rpc InviteMember(InviteMemberRequest) returns (InviteMemberResponse);
+  rpc AcceptInvitation(AcceptInvitationRequest) returns (AcceptInvitationResponse);
+  rpc RevokeInvitation(RevokeInvitationRequest) returns (RevokeInvitationResponse);
+  rpc ListInvitations(ListInvitationsRequest) returns (ListInvitationsResponse);
+  rpc ListMembers(ListMembersRequest) returns (ListMembersResponse);
+}
