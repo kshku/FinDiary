@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package findiary.v1;
+
+option go_package = "github.com/kshku/findiary/backend/internal/api/findiary/v1";
+
+import "google/protobuf/timestamp.proto";
+
+message User {
+  string id = 1;
+  string email = 2;
+  string display_name = 3;
+  google.protobuf.Timestamp created_at = 4;
+}
+
+message Transaction {
+  string id = 1;
+  optional string family_id = 2;
+  string created_by = 3;
+  string type = 4;
+  double amount = 5;
+  string currency = 6;
+  string category_id = 7;
+  optional string description = 8;
+  string date = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+  optional google.protobuf.Timestamp deleted_at = 12;
+}
+
+message Category {
+  string id = 1;
+  string scope = 2;
+  optional string family_id = 3;
+  optional string created_by = 4;
+  string name = 5;
+  string type = 6;
+  optional string icon = 7;
+  optional string color = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp updated_at = 10;
+}
+
+message Family {
+  string id = 1;
+  string name = 2;
+  string owner_id = 3;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp updated_at = 5;
+}
+
+message FamilyMember {
+  string family_id = 1;
+  string user_id = 2;
+  string role = 3;
+  google.protobuf.Timestamp joined_at = 4;
+}
+
+message Invitation {
+  string id = 1;
+  string family_id = 2;
+  string email = 3;
+  string status = 4;
+  string created_by = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp expires_at = 7;
+}
+
+message ChangeEntry {
+  int64 id = 1;
+  optional string family_id = 2;
+  string changed_by = 3;
+  string entity_type = 4;
+  string entity_id = 5;
+  string action = 6;
+  bytes snapshot = 7;
+  repeated string changed_fields = 8;
+  google.protobuf.Timestamp server_timestamp = 9;
+  google.protobuf.Timestamp client_timestamp = 10;
+}

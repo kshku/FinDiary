@@ -1,0 +1,20 @@
+INSERT INTO categories (id, scope, name, type, icon, color) VALUES
+  ('a0000000-0000-0000-0000-000000000001', 'system', 'Salary', 'income', 'salary', '#4CAF50'),
+  ('a0000000-0000-0000-0000-000000000002', 'system', 'Freelance', 'income', 'freelance', '#8BC34A'),
+  ('a0000000-0000-0000-0000-000000000003', 'system', 'Business', 'income', 'business', '#009688'),
+  ('a0000000-0000-0000-0000-000000000004', 'system', 'Investment', 'income', 'investment', '#2196F3'),
+  ('a0000000-0000-0000-0000-000000000005', 'system', 'Gift', 'income', 'gift', '#E91E63'),
+  ('a0000000-0000-0000-0000-000000000006', 'system', 'Refund', 'income', 'refund', '#9C27B0'),
+  ('a0000000-0000-0000-0000-000000000007', 'system', 'Other Income', 'income', 'other', '#607D8B'),
+  ('b0000000-0000-0000-0000-000000000001', 'system', 'Food & Dining', 'expense', 'food', '#FF5722'),
+  ('b0000000-0000-0000-0000-000000000002', 'system', 'Transport', 'expense', 'transport', '#FF9800'),
+  ('b0000000-0000-0000-0000-000000000003', 'system', 'Utilities', 'expense', 'utilities', '#FFC107'),
+  ('b0000000-0000-0000-0000-000000000004', 'system', 'Rent', 'expense', 'rent', '#795548'),
+  ('b0000000-0000-0000-0000-000000000005', 'system', 'Shopping', 'expense', 'shopping', '#F44336'),
+  ('b0000000-0000-0000-0000-000000000006', 'system', 'Healthcare', 'expense', 'healthcare', '#00BCD4'),
+  ('b0000000-0000-0000-0000-000000000007', 'system', 'Entertainment', 'expense', 'entertainment', '#9C27B0'),
+  ('b0000000-0000-0000-0000-000000000008', 'system', 'Education', 'expense', 'education', '#3F51B5'),
+  ('b0000000-0000-0000-0000-000000000009', 'system', 'Insurance', 'expense', 'insurance', '#673AB7'),
+  ('b0000000-0000-0000-0000-00000000000a', 'system', 'Subscription', 'expense', 'subscription', '#607D8B'),
+  ('b0000000-0000-0000-0000-00000000000b', 'system', 'Other Expense', 'expense', 'other', '#9E9E9E')
+ON CONFLICT (id) DO NOTHING;

@@ -1,0 +1,15 @@
+server:
+  host: "0.0.0.0"
+  port: 9090
+
+database:
+  host: "localhost"
+  port: 5432
+  name: "findiary"
+  user: "findiary"
+  password: "findiary_dev"
+
+jwt:
+  secret: "dev-secret-change-in-production"
+  access_ttl: 15m
+  refresh_ttl: 720h

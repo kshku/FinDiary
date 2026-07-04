@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package findiary.v1;
+
+option go_package = "github.com/kshku/findiary/backend/internal/api/findiary/v1";
+
+import "findiary/v1/common.proto";
+import "google/protobuf/empty.proto";
+
+message CreateCategoryRequest {
+  string name = 1;
+  string type = 2;
+  string scope = 3;
+  optional string family_id = 4;
+  optional string icon = 5;
+  optional string color = 6;
+}
+
+message CreateCategoryResponse {
+  Category category = 1;
+}
+
+message GetCategoryRequest {
+  string id = 1;
+}
+
+message GetCategoryResponse {
+  Category category = 1;
+}
+
+message UpdateCategoryRequest {
+  string id = 1;
+  string name = 2;
+  optional string icon = 3;
+  optional string color = 4;
+}
+
+message UpdateCategoryResponse {
+  Category category = 1;
+}
+
+message DeleteCategoryRequest {
+  string id = 1;
+}
+
+message DeleteCategoryResponse {}
+
+message ListCategoriesRequest {
+  string scope = 1;
+  optional string family_id = 2;
+  string type = 3;
+}
+
+message ListCategoriesResponse {
+  repeated Category categories = 1;
+}
+
+service CategoryService {
+  rpc CreateCategory(CreateCategoryRequest) returns (CreateCategoryResponse);
+  rpc GetCategory(GetCategoryRequest) returns (GetCategoryResponse);
+  rpc UpdateCategory(UpdateCategoryRequest) returns (UpdateCategoryResponse);
+  rpc DeleteCategory(DeleteCategoryRequest) returns (DeleteCategoryResponse);
+  rpc ListCategories(ListCategoriesRequest) returns (ListCategoriesResponse);
+}

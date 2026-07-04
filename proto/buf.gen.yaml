@@ -1,0 +1,11 @@
+version: v2
+plugins:
+  - local: protoc-gen-go
+    out: ../backend/internal/api
+    opt: paths=source_relative
+  - local: protoc-gen-connect-go
+    out: ../backend/internal/api
+    opt: paths=source_relative
+  - local: /home/kshku/.pub-cache/bin/protoc-gen-dart
+    out: ../frontend/lib/generated
+    opt: grpc
