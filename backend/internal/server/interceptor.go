@@ -6,32 +6,14 @@ import (
 	"strings"
 
 	"github.com/bufbuild/connect-go"
+	"github.com/kshku/findiary/backend/internal/api"
 	"github.com/kshku/findiary/backend/pkg/jwt"
 )
-
-type contextKey string
-
-const userIDKey contextKey = "user_id"
-const userEmailKey contextKey = "user_email"
 
 var publicProcedures = map[string]bool{
 	"/findiary.v1.AuthService/Register":     true,
 	"/findiary.v1.AuthService/Login":        true,
 	"/findiary.v1.AuthService/RefreshToken": true,
-}
-
-func UserIDFromContext(ctx context.Context) string {
-	if v, ok := ctx.Value(userIDKey).(string); ok {
-		return v
-	}
-	return ""
-}
-
-func UserEmailFromContext(ctx context.Context) string {
-	if v, ok := ctx.Value(userEmailKey).(string); ok {
-		return v
-	}
-	return ""
 }
 
 func AuthInterceptor(mgr *jwt.Manager) connect.UnaryInterceptorFunc {
@@ -54,8 +36,8 @@ func AuthInterceptor(mgr *jwt.Manager) connect.UnaryInterceptorFunc {
 				return nil, connect.NewError(connect.CodeUnauthenticated, err)
 			}
 
-			ctx = context.WithValue(ctx, userIDKey, claims.UserID)
-			ctx = context.WithValue(ctx, userEmailKey, claims.Email)
+			ctx = context.WithValue(ctx, api.UserIDContextKey, claims.UserID)
+			ctx = context.WithValue(ctx, api.UserEmailContextKey, claims.Email)
 			return next(ctx, req)
 		}
 	}
