@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package findiary.v1;
+
+option go_package = "github.com/kshku/findiary/backend/internal/api/findiary/v1";
+
+import "google/protobuf/timestamp.proto";
+
+message SyncRequest {
+  string scope_id = 1;
+  string scope_type = 2;
+  int64 last_checkpoint = 3;
+  repeated SyncChangeEntry local_changes = 4;
+}
+
+message SyncResponse {
+  int64 new_checkpoint = 1;
+  repeated SyncChangeEntry remote_changes = 2;
+  repeated ConflictInfo conflicts = 3;
+}
+
+message SyncChangeEntry {
+  string entity_type = 1;
+  string entity_id = 2;
+  string action = 3;
+  bytes snapshot = 4;
+  google.protobuf.Timestamp client_timestamp = 5;
+  repeated string changed_fields = 6;
+}
+
+message ConflictInfo {
+  string entity_type = 1;
+  string entity_id = 2;
+  string field = 3;
+  string local_value = 4;
+  string server_value = 5;
+}
+
+service SyncService {
+  rpc Sync(SyncRequest) returns (SyncResponse);
+}

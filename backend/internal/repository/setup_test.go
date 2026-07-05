@@ -92,6 +92,34 @@ CREATE INDEX IF NOT EXISTS idx_transactions_created_by ON transactions(created_b
 CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(date);
 CREATE INDEX IF NOT EXISTS idx_transactions_deleted_at ON transactions(deleted_at);
 CREATE INDEX IF NOT EXISTS idx_transactions_type ON transactions(type);
+
+CREATE TABLE IF NOT EXISTS change_log (
+    id BIGSERIAL PRIMARY KEY,
+    family_id UUID REFERENCES families(id),
+    changed_by UUID NOT NULL REFERENCES users(id),
+    entity_type VARCHAR(50) NOT NULL,
+    entity_id UUID NOT NULL,
+    action VARCHAR(20) NOT NULL CHECK (action IN ('create', 'update', 'delete')),
+    snapshot JSONB NOT NULL DEFAULT '{}',
+    changed_fields TEXT[],
+    server_timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    client_timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_change_log_family ON change_log(family_id);
+CREATE INDEX IF NOT EXISTS idx_change_log_entity ON change_log(entity_type, entity_id);
+CREATE INDEX IF NOT EXISTS idx_change_log_server_timestamp ON change_log(server_timestamp);
+
+CREATE TABLE IF NOT EXISTS sync_checkpoints (
+    id BIGSERIAL PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES users(id),
+    scope_id UUID,
+    scope_type VARCHAR(20) NOT NULL CHECK (scope_type IN ('personal', 'family')),
+    last_checkpoint BIGINT NOT NULL DEFAULT 0,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_sync_checkpoints_unique
+    ON sync_checkpoints(user_id, coalesce(scope_id, '00000000-0000-0000-0000-000000000000'), scope_type);
 `
 
 func setupTestDB(t *testing.T) *pgxpool.Pool {
@@ -113,7 +141,7 @@ func setupTestDB(t *testing.T) *pgxpool.Pool {
 		t.Fatalf("apply schema: %v", err)
 	}
 
-	_, err = pool.Exec(context.Background(), "TRUNCATE TABLE transactions, invitations, family_members, categories, families, users CASCADE")
+	_, err = pool.Exec(context.Background(), "TRUNCATE TABLE sync_checkpoints, change_log, transactions, invitations, family_members, categories, families, users CASCADE")
 	if err != nil {
 		t.Fatalf("truncate tables: %v", err)
 	}
