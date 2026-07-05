@@ -120,10 +120,12 @@ func TestSyncService_EndToEnd(t *testing.T) {
 	user := createTestUser(t, ctx, db)
 
 	cat := &domain.Category{
-		ID:    uuid.New().String(),
-		Scope: "personal",
-		Name:  "Test Category",
-		Type:  "expense",
+		ID:        uuid.New().String(),
+		Scope:     "personal",
+		Name:      "Test Category",
+		Type:      "expense",
+		CreatedAt: time.Now().UTC().Format(time.RFC3339Nano),
+		UpdatedAt: time.Now().UTC().Format(time.RFC3339Nano),
 	}
 	require.NoError(t, catRepo.Create(ctx, cat))
 

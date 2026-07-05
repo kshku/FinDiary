@@ -85,6 +85,19 @@ func New(cfg *config.Config, logger *slog.Logger) (*Server, error) {
 	)
 	mux.Handle(txPattern, txHTTPHandler)
 
+	syncRepo := repository.NewSyncRepo(db)
+	syncSvc := service.NewSyncService(syncRepo, txRepo, categoryRepo, familyRepo, userRepo)
+	syncHandler := api.NewSyncHandler(syncSvc)
+
+	syncPattern, syncHTTPHandler := pbv1connect.NewSyncServiceHandler(
+		syncHandler,
+		connect.WithInterceptors(
+			LoggingInterceptor(logger),
+			AuthInterceptor(mgr),
+		),
+	)
+	mux.Handle(syncPattern, syncHTTPHandler)
+
 	return &Server{
 		cfg:    cfg,
 		logger: logger,
