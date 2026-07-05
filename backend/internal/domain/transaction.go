@@ -1,6 +1,9 @@
 package domain
 
-import "context"
+import (
+	"context"
+	"encoding/json"
+)
 
 type Transaction struct {
 	ID          string
@@ -60,4 +63,12 @@ type UpdateTxRequest struct {
 	CategoryID  string
 	Description *string
 	Date        string
+}
+
+func UnmarshalTransaction(data []byte) (*Transaction, error) {
+	var tx Transaction
+	if err := json.Unmarshal(data, &tx); err != nil {
+		return nil, err
+	}
+	return &tx, nil
 }
