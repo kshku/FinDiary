@@ -9,7 +9,8 @@ class TransactionDao extends DatabaseAccessor<AppDatabase> {
 
   VoidCallback? onPendingChange;
 
-  Future<void> upsertTransaction(TransactionsCompanion entry) {
+  Future<void> upsertTransaction(TransactionsCompanion entry, {bool skipHook = false}) {
+    if (skipHook) return into(db.transactions).insertOnConflictUpdate(entry);
     _onChange(entry.id.value, 'update', {
       'id': entry.id.value,
       'type': entry.type.value,

@@ -1,4 +1,4 @@
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:fixnum/fixnum.dart';
 
 import 'package:findiary/core/database/database.dart';

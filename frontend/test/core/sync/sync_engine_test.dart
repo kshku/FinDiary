@@ -1,5 +1,5 @@
 import 'package:mocktail/mocktail.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:fixnum/fixnum.dart';
 
 import 'package:findiary/core/sync/sync_engine.dart';
