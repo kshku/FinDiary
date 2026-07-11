@@ -5,7 +5,6 @@ import 'core/di/injection.dart';
 import 'core/auth/auth_service.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/bloc/auth_bloc.dart';
-import 'features/auth/bloc/auth_event.dart';
 import 'features/auth/bloc/auth_state.dart';
 import 'features/auth/login_page.dart';
 import 'features/dashboard/dashboard_page.dart';
