@@ -1,0 +1,143 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:drift/drift.dart';
+import 'package:fixnum/fixnum.dart';
+import 'package:flutter/material.dart';
+
+import '../../generated/findiary/v1/sync_service.pb.dart';
+import '../database/database.dart';
+import '../database/daos/sync_meta_dao.dart';
+import '../database/daos/transaction_dao.dart';
+import 'sync_service.dart';
+
+enum SyncResult { success, failure }
+
+class SyncEngine with WidgetsBindingObserver {
+  final SyncService _syncService;
+  final SyncMetaDao _syncMetaDao;
+  final TransactionDao _transactionDao;
+  final String _scopeId;
+  final String _scopeType;
+
+  bool _isSyncing = false;
+  bool _isApplyingRemote = false;
+  Timer? _debounceTimer;
+  int _backoffDelay = 1;
+  static const int _maxBackoff = 30;
+
+  SyncEngine({
+    required SyncService syncService,
+    required SyncMetaDao syncMetaDao,
+    required TransactionDao transactionDao,
+    required String scopeId,
+    required String scopeType,
+  })  : _syncService = syncService,
+        _syncMetaDao = syncMetaDao,
+        _transactionDao = transactionDao,
+        _scopeId = scopeId,
+        _scopeType = scopeType;
+
+  void start() {
+    WidgetsBinding.instance.addObserver(this);
+    _transactionDao.onPendingChange = _onPendingChange;
+  }
+
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _debounceTimer?.cancel();
+    _transactionDao.onPendingChange = null;
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(syncNow());
+    }
+  }
+
+  void _onPendingChange() {
+    if (_isApplyingRemote) return;
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      unawaited(syncNow());
+    });
+  }
+
+  Future<SyncResult> syncNow() async {
+    if (_isSyncing) return SyncResult.success;
+    _isSyncing = true;
+
+    try {
+      final meta = await _syncMetaDao.getMeta(_scopeId, _scopeType);
+      final checkpoint = meta?.lastCheckpoint ?? 0;
+      final pendingChanges = await _syncMetaDao.getPendingChanges();
+
+      if (pendingChanges.isEmpty && meta != null) {
+        _resetBackoff();
+        return SyncResult.success;
+      }
+
+      final response = await _syncService.sync(
+        scopeId: _scopeId,
+        scopeType: _scopeType,
+        lastCheckpoint: Int64(checkpoint),
+        localChanges: pendingChanges,
+      );
+
+      await _applyRemoteChanges(response.remoteChanges);
+
+      for (final change in pendingChanges) {
+        await _syncMetaDao.removePendingChange(change.id);
+      }
+
+      await _syncMetaDao.upsertMeta(SyncMetaCompanion(
+        scopeId: Value(_scopeId),
+        scopeType: Value(_scopeType),
+        lastCheckpoint: Value(response.newCheckpoint.toInt()),
+        lastSyncedAt: Value(DateTime.now().toIso8601String()),
+      ));
+
+      _resetBackoff();
+      return SyncResult.success;
+    } catch (_) {
+      _scheduleRetry();
+      return SyncResult.failure;
+    } finally {
+      _isSyncing = false;
+    }
+  }
+
+  Future<void> _applyRemoteChanges(List<SyncChangeEntry> changes) async {
+    _isApplyingRemote = true;
+    for (final change in changes) {
+      if (change.entityType != 'transaction') continue;
+      final payload = utf8.decode(change.snapshot);
+      final data = jsonDecode(payload) as Map<String, dynamic>;
+      await _transactionDao.upsertTransaction(TransactionsCompanion(
+        id: Value(data['id'] as String),
+        createdBy: Value(data['created_by'] as String? ?? ''),
+        type: Value(data['type'] as String? ?? ''),
+        amount: Value((data['amount'] as num).toDouble()),
+        currency: Value(data['currency'] as String? ?? 'INR'),
+        categoryId: Value(data['category_id'] as String? ?? ''),
+        date: Value(data['date'] as String? ?? ''),
+        createdAt: Value(data['created_at'] as String? ?? DateTime.now().toIso8601String()),
+        updatedAt: Value(data['updated_at'] as String? ?? DateTime.now().toIso8601String()),
+      ));
+    }
+    _isApplyingRemote = false;
+  }
+
+  void _resetBackoff() {
+    _backoffDelay = 1;
+  }
+
+  void _scheduleRetry() {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(Duration(seconds: _backoffDelay), () {
+      unawaited(syncNow());
+    });
+    _backoffDelay = (_backoffDelay * 2).clamp(1, _maxBackoff);
+  }
+}
