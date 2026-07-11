@@ -1,10 +1,25 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:drift/drift.dart';
 import '../database.dart';
 
 class TransactionDao extends DatabaseAccessor<AppDatabase> {
   TransactionDao(super.db);
 
+  VoidCallback? onPendingChange;
+
   Future<void> upsertTransaction(TransactionsCompanion entry) {
+    _onChange(entry.id.value, 'update', {
+      'id': entry.id.value,
+      'type': entry.type.value,
+      'amount': entry.amount.value,
+      'currency': entry.currency.value,
+      'category_id': entry.categoryId.value,
+      'date': entry.date.value,
+      if (entry.description.present) 'description': entry.description.value,
+      if (entry.familyId.present) 'family_id': entry.familyId.value,
+    });
     return into(db.transactions).insertOnConflictUpdate(entry);
   }
 
@@ -64,6 +79,7 @@ class TransactionDao extends DatabaseAccessor<AppDatabase> {
   }
 
   Future<void> softDeleteTransaction(String id) {
+    _onChange(id, 'delete', {'id': id});
     return (update(db.transactions)..where((t) => t.id.equals(id))).write(
       TransactionsCompanion(deletedAt: Value(DateTime.now().toIso8601String())),
     );
@@ -73,5 +89,16 @@ class TransactionDao extends DatabaseAccessor<AppDatabase> {
     return (update(db.transactions)..where((t) => t.id.equals(id))).write(
       const TransactionsCompanion(syncStatus: Value(1)),
     );
+  }
+
+  void _onChange(String entityId, String action, Map<String, dynamic> data) {
+    into(db.pendingChanges).insert(PendingChangesCompanion(
+      entityType: Value('transaction'),
+      entityId: Value(entityId),
+      action: Value(action),
+      payload: Value(jsonEncode(data)),
+      createdAt: Value(DateTime.now().toIso8601String()),
+    ));
+    onPendingChange?.call();
   }
 }
