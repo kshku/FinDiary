@@ -1,16 +1,23 @@
 import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../auth/auth_service.dart';
 import '../auth/token_storage.dart';
 import '../client/grpc_client.dart';
 import '../database/database.dart';
 import '../database/daos/transaction_dao.dart';
+import '../database/daos/category_dao.dart';
 import '../database/daos/sync_meta_dao.dart';
 import '../sync/sync_service.dart';
 import '../sync/sync_engine.dart';
+import '../theme/app_theme.dart';
 
 final sl = GetIt.instance;
 
 Future<void> initDependencies() async {
+  final prefs = await SharedPreferences.getInstance();
+  sl.registerLazySingleton<SharedPreferences>(() => prefs);
+  sl.registerLazySingleton<ThemeCubit>(() => ThemeCubit(prefs));
+
   final grpcClient = GrpcClient(host: 'localhost', port: 9090);
   sl.registerLazySingleton<GrpcClient>(() => grpcClient);
 
@@ -28,6 +35,9 @@ Future<void> initDependencies() async {
 
   final syncMetaDao = SyncMetaDao(database);
   sl.registerLazySingleton<SyncMetaDao>(() => syncMetaDao);
+
+  final categoryDao = CategoryDao(database);
+  sl.registerLazySingleton<CategoryDao>(() => categoryDao);
 
   final transactionDao = TransactionDao(database);
   sl.registerLazySingleton<TransactionDao>(() => transactionDao);
