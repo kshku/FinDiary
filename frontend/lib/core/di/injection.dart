@@ -6,7 +6,11 @@ import '../client/grpc_client.dart';
 import '../database/database.dart';
 import '../database/daos/transaction_dao.dart';
 import '../database/daos/category_dao.dart';
+import '../database/daos/family_dao.dart';
 import '../database/daos/sync_meta_dao.dart';
+import '../grpc/family_service.dart';
+import '../grpc/category_service.dart';
+import '../grpc/transaction_service.dart';
 import '../sync/sync_service.dart';
 import '../sync/sync_engine.dart';
 import '../theme/app_theme.dart';
@@ -30,6 +34,10 @@ Future<void> initDependencies() async {
   );
   sl.registerLazySingleton<AuthService>(() => authService);
 
+  sl.registerLazySingleton<FamilyGrpcService>(() => FamilyGrpcService(grpcClient));
+  sl.registerLazySingleton<CategoryGrpcService>(() => CategoryGrpcService(grpcClient));
+  sl.registerLazySingleton<TransactionGrpcService>(() => TransactionGrpcService(grpcClient));
+
   final database = AppDatabase();
   sl.registerLazySingleton<AppDatabase>(() => database);
 
@@ -42,6 +50,9 @@ Future<void> initDependencies() async {
   final transactionDao = TransactionDao(database);
   sl.registerLazySingleton<TransactionDao>(() => transactionDao);
 
+  final familyDao = FamilyDao(database);
+  sl.registerLazySingleton<FamilyDao>(() => familyDao);
+
   final syncGrpcClient = grpcClient.createSyncServiceClient();
   final syncService = SyncService(
     (request) => syncGrpcClient.sync(request),
@@ -52,6 +63,7 @@ Future<void> initDependencies() async {
     syncService: syncService,
     syncMetaDao: syncMetaDao,
     transactionDao: transactionDao,
+    categoryDao: categoryDao,
     scopeId: 'personal',
     scopeType: 'personal',
   );

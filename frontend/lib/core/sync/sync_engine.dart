@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import '../../generated/findiary/v1/sync_service.pb.dart';
 import '../database/database.dart';
+import '../database/daos/category_dao.dart';
 import '../database/daos/sync_meta_dao.dart';
 import '../database/daos/transaction_dao.dart';
 import 'sync_service.dart';
@@ -17,6 +18,7 @@ class SyncEngine with WidgetsBindingObserver {
   final SyncService _syncService;
   final SyncMetaDao _syncMetaDao;
   final TransactionDao _transactionDao;
+  final CategoryDao _categoryDao;
   final String _scopeId;
   final String _scopeType;
 
@@ -27,12 +29,18 @@ class SyncEngine with WidgetsBindingObserver {
   static const int _maxBackoff = 30;
 
   SyncEngine({
-    required this._syncService,
-    required this._syncMetaDao,
-    required this._transactionDao,
-    required this._scopeId,
-    required this._scopeType,
-  });
+    required SyncService syncService,
+    required SyncMetaDao syncMetaDao,
+    required TransactionDao transactionDao,
+    required CategoryDao categoryDao,
+    required String scopeId,
+    required String scopeType,
+  })  : _syncService = syncService,
+        _syncMetaDao = syncMetaDao,
+        _transactionDao = transactionDao,
+        _categoryDao = categoryDao,
+        _scopeId = scopeId,
+        _scopeType = scopeType;
 
   void start() {
     WidgetsBinding.instance.addObserver(this);
@@ -107,20 +115,34 @@ class SyncEngine with WidgetsBindingObserver {
   Future<void> _applyRemoteChanges(List<SyncChangeEntry> changes) async {
     _isApplyingRemote = true;
     for (final change in changes) {
-      if (change.entityType != 'transaction') continue;
       final payload = utf8.decode(change.snapshot);
       final data = jsonDecode(payload) as Map<String, dynamic>;
-      await _transactionDao.upsertTransaction(TransactionsCompanion(
-        id: Value(data['id'] as String),
-        createdBy: Value(data['created_by'] as String? ?? ''),
-        type: Value(data['type'] as String? ?? ''),
-        amount: Value((data['amount'] as num).toDouble()),
-        currency: Value(data['currency'] as String? ?? 'INR'),
-        categoryId: Value(data['category_id'] as String? ?? ''),
-        date: Value(data['date'] as String? ?? ''),
-        createdAt: Value(data['created_at'] as String? ?? DateTime.now().toIso8601String()),
-        updatedAt: Value(data['updated_at'] as String? ?? DateTime.now().toIso8601String()),
-      ), skipHook: true);
+
+      switch (change.entityType) {
+        case 'transaction':
+          await _transactionDao.upsertTransaction(TransactionsCompanion(
+            id: Value(data['id'] as String),
+            createdBy: Value(data['created_by'] as String? ?? ''),
+            type: Value(data['type'] as String? ?? ''),
+            amount: Value((data['amount'] as num).toDouble()),
+            currency: Value(data['currency'] as String? ?? 'INR'),
+            categoryId: Value(data['category_id'] as String? ?? ''),
+            date: Value(data['date'] as String? ?? ''),
+            createdAt: Value(data['created_at'] as String? ?? DateTime.now().toIso8601String()),
+            updatedAt: Value(data['updated_at'] as String? ?? DateTime.now().toIso8601String()),
+          ), skipHook: true);
+        case 'category':
+          await _categoryDao.upsertCategory(CategoriesCompanion(
+            id: Value(data['id'] as String),
+            scope: Value(data['scope'] as String? ?? 'personal'),
+            name: Value(data['name'] as String? ?? ''),
+            type: Value(data['type'] as String? ?? ''),
+            icon: Value<String?>(data['icon'] as String?),
+            color: Value<String?>(data['color'] as String?),
+            createdAt: Value(data['created_at'] as String? ?? DateTime.now().toIso8601String()),
+            updatedAt: Value(data['updated_at'] as String? ?? DateTime.now().toIso8601String()),
+          ));
+      }
     }
     _isApplyingRemote = false;
   }

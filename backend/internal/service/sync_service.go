@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -54,17 +55,34 @@ func (s *SyncService) Sync(ctx context.Context, userID string, scopeID string, s
 	_ = cp
 
 	var conflicts []domain.ConflictInfo
+	now := time.Now().UTC()
 
 	for _, ch := range localChanges {
 		switch ch.Action {
 		case "create", "update":
-			conflict, err := s.applyUpsert(ctx, userID, scopePtr, ch)
+			conflict, snapshot, err := s.applyUpsert(ctx, userID, scopePtr, ch)
 			if err != nil {
 				return nil, fmt.Errorf("apply %s %s: %w", ch.EntityType, ch.EntityID, err)
 			}
 			if conflict != nil {
 				conflicts = append(conflicts, *conflict)
 			}
+
+			clEntry := domain.ChangeLogEntry{
+				FamilyID:        scopePtr,
+				ChangedBy:       userID,
+				EntityType:      ch.EntityType,
+				EntityID:        ch.EntityID,
+				Action:          ch.Action,
+				Snapshot:        snapshot,
+				ChangedFields:   ch.ChangedFields,
+				ServerTimestamp: now,
+				ClientTimestamp: ch.ClientTimestamp,
+			}
+			if err := s.syncRepo.AppendChangeLog(ctx, clEntry); err != nil {
+				return nil, fmt.Errorf("append changelog: %w", err)
+			}
+
 		case "delete":
 			conflict, err := s.applyDelete(ctx, userID, ch)
 			if err != nil {
@@ -72,6 +90,21 @@ func (s *SyncService) Sync(ctx context.Context, userID string, scopeID string, s
 			}
 			if conflict != nil {
 				conflicts = append(conflicts, *conflict)
+			}
+
+			clEntry := domain.ChangeLogEntry{
+				FamilyID:        scopePtr,
+				ChangedBy:       userID,
+				EntityType:      ch.EntityType,
+				EntityID:        ch.EntityID,
+				Action:          ch.Action,
+				Snapshot:        string(ch.Snapshot),
+				ChangedFields:   ch.ChangedFields,
+				ServerTimestamp: now,
+				ClientTimestamp: ch.ClientTimestamp,
+			}
+			if err := s.syncRepo.AppendChangeLog(ctx, clEntry); err != nil {
+				return nil, fmt.Errorf("append changelog: %w", err)
 			}
 		}
 	}
@@ -121,26 +154,26 @@ func (s *SyncService) validateScope(ctx context.Context, userID, scopeID, scopeT
 	return nil
 }
 
-func (s *SyncService) applyUpsert(ctx context.Context, userID string, scopePtr *string, ch domain.SyncChange) (*domain.ConflictInfo, error) {
+func (s *SyncService) applyUpsert(ctx context.Context, userID string, scopePtr *string, ch domain.SyncChange) (*domain.ConflictInfo, string, error) {
 	switch ch.EntityType {
 	case "transaction":
 		return s.applyTransactionUpsert(ctx, userID, scopePtr, ch)
 	case "category":
-		return nil, nil
+		return s.applyCategoryUpsert(ctx, userID, scopePtr, ch)
 	default:
-		return nil, fmt.Errorf("%w: unknown entity type %s", domain.ErrInvalidInput, ch.EntityType)
+		return nil, "", fmt.Errorf("%w: unknown entity type %s", domain.ErrInvalidInput, ch.EntityType)
 	}
 }
 
-func (s *SyncService) applyTransactionUpsert(ctx context.Context, userID string, scopePtr *string, ch domain.SyncChange) (*domain.ConflictInfo, error) {
+func (s *SyncService) applyTransactionUpsert(ctx context.Context, userID string, scopePtr *string, ch domain.SyncChange) (*domain.ConflictInfo, string, error) {
 	tx, err := domain.UnmarshalTransaction(ch.Snapshot)
 	if err != nil {
-		return nil, fmt.Errorf("unmarshal transaction: %w", err)
+		return nil, "", fmt.Errorf("unmarshal transaction: %w", err)
 	}
 
 	existing, err := s.txRepo.FindByID(ctx, ch.EntityID)
 	if err != nil && !errors.Is(err, domain.ErrNotFound) {
-		return nil, err
+		return nil, "", err
 	}
 
 	if existing != nil && existing.DeletedAt != nil {
@@ -149,13 +182,13 @@ func (s *SyncService) applyTransactionUpsert(ctx context.Context, userID string,
 			EntityID:    ch.EntityID,
 			Field:       "deleted_at",
 			ServerValue: "deleted",
-		}, nil
+		}, "", nil
 	}
 
 	if existing != nil {
 		existingUpdatedAt, err := time.Parse(time.RFC3339Nano, existing.UpdatedAt)
 		if err != nil {
-			return nil, fmt.Errorf("parse existing updated_at: %w", err)
+			return nil, "", fmt.Errorf("parse existing updated_at: %w", err)
 		}
 		if !ch.ClientTimestamp.After(existingUpdatedAt) {
 			return &domain.ConflictInfo{
@@ -164,7 +197,7 @@ func (s *SyncService) applyTransactionUpsert(ctx context.Context, userID string,
 				Field:       "updated_at",
 				LocalValue:  ch.ClientTimestamp.Format(time.RFC3339),
 				ServerValue: existing.UpdatedAt,
-			}, nil
+			}, "", nil
 		}
 		now := time.Now().UTC().Format(time.RFC3339Nano)
 		existing.Type = tx.Type
@@ -175,21 +208,74 @@ func (s *SyncService) applyTransactionUpsert(ctx context.Context, userID string,
 		existing.Date = tx.Date
 		existing.UpdatedAt = now
 		if err := s.txRepo.Update(ctx, existing); err != nil {
-			return nil, err
+			return nil, "", err
 		}
-	} else {
-		now := time.Now().UTC().Format(time.RFC3339Nano)
-		tx.ID = ch.EntityID
-		tx.FamilyID = scopePtr
-		tx.CreatedBy = userID
-		tx.CreatedAt = now
-		tx.UpdatedAt = now
-		if err := s.txRepo.Create(ctx, tx); err != nil {
-			return nil, err
-		}
+		snapshot, _ := json.Marshal(existing)
+		return nil, string(snapshot), nil
 	}
 
-	return nil, nil
+	now := time.Now().UTC().Format(time.RFC3339Nano)
+	tx.ID = ch.EntityID
+	tx.FamilyID = scopePtr
+	tx.CreatedBy = userID
+	tx.CreatedAt = now
+	tx.UpdatedAt = now
+	if err := s.txRepo.Create(ctx, tx); err != nil {
+		return nil, "", err
+	}
+	snapshot, _ := json.Marshal(tx)
+	return nil, string(snapshot), nil
+}
+
+func (s *SyncService) applyCategoryUpsert(ctx context.Context, userID string, scopePtr *string, ch domain.SyncChange) (*domain.ConflictInfo, string, error) {
+	var cat domain.Category
+	if err := json.Unmarshal(ch.Snapshot, &cat); err != nil {
+		return nil, "", fmt.Errorf("unmarshal category: %w", err)
+	}
+
+	existing, err := s.categoryRepo.FindByID(ctx, ch.EntityID)
+	if err != nil && !errors.Is(err, domain.ErrNotFound) {
+		return nil, "", err
+	}
+
+	if existing != nil {
+		existingUpdatedAt, err := time.Parse(time.RFC3339Nano, existing.UpdatedAt)
+		if err != nil {
+			return nil, "", fmt.Errorf("parse existing updated_at: %w", err)
+		}
+		if !ch.ClientTimestamp.After(existingUpdatedAt) {
+			return &domain.ConflictInfo{
+				EntityType:  "category",
+				EntityID:    ch.EntityID,
+				Field:       "updated_at",
+				LocalValue:  ch.ClientTimestamp.Format(time.RFC3339),
+				ServerValue: existing.UpdatedAt,
+			}, "", nil
+		}
+		now := time.Now().UTC().Format(time.RFC3339Nano)
+		existing.Name = cat.Name
+		existing.Type = cat.Type
+		existing.Icon = cat.Icon
+		existing.Color = cat.Color
+		existing.UpdatedAt = now
+		if err := s.categoryRepo.Update(ctx, existing); err != nil {
+			return nil, "", err
+		}
+		snapshot, _ := json.Marshal(existing)
+		return nil, string(snapshot), nil
+	}
+
+	now := time.Now().UTC().Format(time.RFC3339Nano)
+	cat.ID = ch.EntityID
+	cat.FamilyID = scopePtr
+	cat.CreatedBy = &userID
+	cat.CreatedAt = now
+	cat.UpdatedAt = now
+	if err := s.categoryRepo.Create(ctx, &cat); err != nil {
+		return nil, "", err
+	}
+	snapshot, _ := json.Marshal(cat)
+	return nil, string(snapshot), nil
 }
 
 func (s *SyncService) applyDelete(ctx context.Context, userID string, ch domain.SyncChange) (*domain.ConflictInfo, error) {
@@ -206,6 +292,16 @@ func (s *SyncService) applyDelete(ctx context.Context, userID string, ch domain.
 			return nil, nil
 		}
 		return nil, s.txRepo.SoftDelete(ctx, ch.EntityID)
+	case "category":
+		existing, err := s.categoryRepo.FindByID(ctx, ch.EntityID)
+		if err != nil {
+			if errors.Is(err, domain.ErrNotFound) {
+				return nil, nil
+			}
+			return nil, err
+		}
+		_ = existing
+		return nil, s.categoryRepo.Delete(ctx, ch.EntityID)
 	default:
 		return nil, fmt.Errorf("%w: unknown entity type %s", domain.ErrInvalidInput, ch.EntityType)
 	}

@@ -79,6 +79,28 @@ class TransactionDao extends DatabaseAccessor<AppDatabase> {
     return query.map((_) => null).get().then((rows) => rows.length);
   }
 
+  Future<double> sumTransactions({String? familyId, String? type}) async {
+    var query = selectOnly(db.transactions)
+      ..addColumns([db.transactions.amount])
+      ..where(db.transactions.deletedAt.isNull());
+
+    if (familyId != null) {
+      query.where(db.transactions.familyId.equals(familyId));
+    } else {
+      query.where(db.transactions.familyId.isNull());
+    }
+    if (type != null && type.isNotEmpty) {
+      query.where(db.transactions.type.equals(type));
+    }
+
+    final rows = await query.get();
+    double total = 0;
+    for (final row in rows) {
+      total += row.read(db.transactions.amount) ?? 0;
+    }
+    return total;
+  }
+
   Future<void> softDeleteTransaction(String id) {
     _onChange(id, 'delete', {'id': id});
     return (update(db.transactions)..where((t) => t.id.equals(id))).write(

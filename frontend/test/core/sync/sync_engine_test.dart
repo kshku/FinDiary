@@ -5,12 +5,14 @@ import 'package:fixnum/fixnum.dart';
 import 'package:findiary/core/sync/sync_engine.dart';
 import 'package:findiary/core/sync/sync_service.dart';
 import 'package:findiary/core/database/database.dart';
+import 'package:findiary/core/database/daos/category_dao.dart';
 import 'package:findiary/core/database/daos/sync_meta_dao.dart';
 import 'package:findiary/core/database/daos/transaction_dao.dart';
 import 'package:findiary/generated/findiary/v1/sync_service.pb.dart';
 
 class MockSyncMetaDao extends Mock implements SyncMetaDao {}
 class MockTransactionDao extends Mock implements TransactionDao {}
+class MockCategoryDao extends Mock implements CategoryDao {}
 
 void main() {
   late MockSyncMetaDao mockSyncMetaDao;
@@ -21,9 +23,12 @@ void main() {
     registerFallbackValue(0);
   });
 
+  late MockCategoryDao mockCategoryDao;
+
   setUp(() {
     mockSyncMetaDao = MockSyncMetaDao();
     mockTransactionDao = MockTransactionDao();
+    mockCategoryDao = MockCategoryDao();
 
     when(() => mockSyncMetaDao.removePendingChange(any()))
         .thenAnswer((_) async {});
@@ -70,6 +75,7 @@ void main() {
         }),
         syncMetaDao: mockSyncMetaDao,
         transactionDao: mockTransactionDao,
+        categoryDao: mockCategoryDao,
         scopeId: 'user-1',
         scopeType: 'personal',
       );
@@ -110,6 +116,7 @@ void main() {
         }),
         syncMetaDao: mockSyncMetaDao,
         transactionDao: mockTransactionDao,
+        categoryDao: mockCategoryDao,
         scopeId: 'user-1',
         scopeType: 'personal',
       );

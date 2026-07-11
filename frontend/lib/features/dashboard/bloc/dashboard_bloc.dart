@@ -18,12 +18,12 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   ) async {
     emit(const DashboardLoading());
     try {
-      final income = await _transactionDao.countTransactions(type: 'income');
-      final expense = await _transactionDao.countTransactions(type: 'expense');
+      final income = await _transactionDao.sumTransactions(type: 'income');
+      final expense = await _transactionDao.sumTransactions(type: 'expense');
       final recent = await _transactionDao.listTransactions(limit: 10);
       emit(DashboardLoaded(
-        totalIncome: income.toDouble(),
-        totalExpense: expense.toDouble(),
+        totalIncome: income,
+        totalExpense: expense,
         recentTransactions: recent,
       ));
     } catch (_) {

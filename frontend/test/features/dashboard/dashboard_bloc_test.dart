@@ -20,10 +20,10 @@ void main() {
     blocTest<DashboardBloc, DashboardState>(
       'emits loading then loaded with totals',
       setUp: () {
-        when(() => mockTransactionDao.countTransactions(type: 'income'))
-            .thenAnswer((_) async => 500);
-        when(() => mockTransactionDao.countTransactions(type: 'expense'))
-            .thenAnswer((_) async => 300);
+        when(() => mockTransactionDao.sumTransactions(type: 'income'))
+            .thenAnswer((_) async => 500.0);
+        when(() => mockTransactionDao.sumTransactions(type: 'expense'))
+            .thenAnswer((_) async => 300.0);
         when(() => mockTransactionDao.listTransactions(limit: 10))
             .thenAnswer((_) async => []);
       },
@@ -42,7 +42,7 @@ void main() {
     blocTest<DashboardBloc, DashboardState>(
       'handles dao error gracefully',
       setUp: () {
-        when(() => mockTransactionDao.countTransactions(type: 'income'))
+        when(() => mockTransactionDao.sumTransactions(type: 'income'))
             .thenThrow(Exception('db error'));
       },
       build: () => DashboardBloc(transactionDao: mockTransactionDao),
