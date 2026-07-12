@@ -10,6 +10,7 @@ import '../database/database.dart';
 import '../database/daos/category_dao.dart';
 import '../database/daos/sync_meta_dao.dart';
 import '../database/daos/transaction_dao.dart';
+import '../network/connectivity_notifier.dart';
 import 'sync_service.dart';
 
 enum SyncResult { success, failure }
@@ -19,8 +20,10 @@ class SyncEngine with WidgetsBindingObserver {
   final SyncMetaDao _syncMetaDao;
   final TransactionDao _transactionDao;
   final CategoryDao _categoryDao;
+  final ConnectivityNotifier _connectivityNotifier;
   final String _scopeId;
   final String _scopeType;
+  StreamSubscription<bool>? _connectivitySub;
 
   bool _isSyncing = false;
   bool _isApplyingRemote = false;
@@ -33,24 +36,32 @@ class SyncEngine with WidgetsBindingObserver {
     required SyncMetaDao syncMetaDao,
     required TransactionDao transactionDao,
     required CategoryDao categoryDao,
+    required ConnectivityNotifier connectivityNotifier,
     required String scopeId,
     required String scopeType,
   })  : _syncService = syncService,
         _syncMetaDao = syncMetaDao,
         _transactionDao = transactionDao,
         _categoryDao = categoryDao,
+        _connectivityNotifier = connectivityNotifier,
         _scopeId = scopeId,
         _scopeType = scopeType;
 
   void start() {
     WidgetsBinding.instance.addObserver(this);
     _transactionDao.onPendingChange = _onPendingChange;
+    _connectivitySub = _connectivityNotifier.onConnectivityChanged.listen((online) {
+      if (online) {
+        unawaited(syncNow());
+      }
+    });
   }
 
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _debounceTimer?.cancel();
     _transactionDao.onPendingChange = null;
+    _connectivitySub?.cancel();
   }
 
   @override
@@ -70,6 +81,7 @@ class SyncEngine with WidgetsBindingObserver {
 
   Future<SyncResult> syncNow() async {
     if (_isSyncing) return SyncResult.success;
+    if (!_connectivityNotifier.isOnline) return SyncResult.failure;
     _isSyncing = true;
 
     try {

@@ -12,6 +12,7 @@ import '../grpc/family_service.dart';
 import '../grpc/category_service.dart';
 import '../grpc/transaction_service.dart';
 import '../sync/sync_service.dart';
+import '../network/connectivity_notifier.dart';
 import '../sync/sync_engine.dart';
 import '../theme/app_theme.dart';
 
@@ -53,6 +54,9 @@ Future<void> initDependencies() async {
   final familyDao = FamilyDao(database);
   sl.registerLazySingleton<FamilyDao>(() => familyDao);
 
+  final connectivityNotifier = ConnectivityNotifier();
+  sl.registerLazySingleton<ConnectivityNotifier>(() => connectivityNotifier);
+
   final syncGrpcClient = grpcClient.createSyncServiceClient();
   final syncService = SyncService(
     (request) => syncGrpcClient.sync(request),
@@ -64,6 +68,7 @@ Future<void> initDependencies() async {
     syncMetaDao: syncMetaDao,
     transactionDao: transactionDao,
     categoryDao: categoryDao,
+    connectivityNotifier: connectivityNotifier,
     scopeId: 'personal',
     scopeType: 'personal',
   );
