@@ -8,11 +8,17 @@ import (
 	"time"
 
 	"github.com/kshku/findiary/backend/internal/domain"
-	"github.com/kshku/findiary/backend/internal/repository"
 )
 
+type SyncRepo interface {
+	GetOrCreateCheckpoint(ctx context.Context, userID string, scopeID *string, scopeType string) (*domain.SyncCheckpoint, error)
+	UpdateCheckpoint(ctx context.Context, userID string, scopeID *string, scopeType string, checkpoint int64) error
+	AppendChangeLog(ctx context.Context, entry domain.ChangeLogEntry) error
+	GetChangesSince(ctx context.Context, scopeID *string, since int64) ([]domain.ChangeLogEntry, error)
+}
+
 type SyncService struct {
-	syncRepo     *repository.SyncRepo
+	syncRepo     SyncRepo
 	txRepo       domain.TransactionRepository
 	categoryRepo domain.CategoryRepository
 	familyRepo   domain.FamilyRepository
@@ -20,7 +26,7 @@ type SyncService struct {
 }
 
 func NewSyncService(
-	syncRepo *repository.SyncRepo,
+	syncRepo SyncRepo,
 	txRepo domain.TransactionRepository,
 	categoryRepo domain.CategoryRepository,
 	familyRepo domain.FamilyRepository,
