@@ -18,9 +18,11 @@ type mockDashboardTxRepo struct {
 	transactions []*domain.Transaction
 	txCount      int
 	txErr        error
+	monthsCalled int
 }
 
 func (m *mockDashboardTxRepo) GetMonthlyTotals(ctx context.Context, userID string, familyID *string, months int) ([]repository.MonthlyTotal, error) {
+	m.monthsCalled = months
 	return m.totals, m.totalsErr
 }
 
@@ -136,6 +138,7 @@ func TestGetDashboard_DefaultMonths(t *testing.T) {
 	data, err := svc.GetDashboard(context.Background(), "user1", nil, 0)
 	require.NoError(t, err)
 	require.NotNil(t, data)
+	assert.Equal(t, 6, txRepo.monthsCalled)
 }
 
 func TestGetDashboard_MonthsCapped(t *testing.T) {
@@ -149,6 +152,7 @@ func TestGetDashboard_MonthsCapped(t *testing.T) {
 	data, err := svc.GetDashboard(context.Background(), "user1", nil, 20)
 	require.NoError(t, err)
 	require.NotNil(t, data)
+	assert.Equal(t, 6, txRepo.monthsCalled)
 }
 
 func TestGetDashboard_MultipleMonths(t *testing.T) {
