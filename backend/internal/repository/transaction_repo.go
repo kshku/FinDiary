@@ -46,7 +46,10 @@ func (r *TransactionRepo) GetMonthlyTotals(ctx context.Context, userID string, f
 		}
 		totals = append(totals, mt)
 	}
-	return totals, rows.Err()
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("monthly totals rows: %w", err)
+	}
+	return totals, nil
 }
 
 func (r *TransactionRepo) Create(ctx context.Context, tx *domain.Transaction) error {
