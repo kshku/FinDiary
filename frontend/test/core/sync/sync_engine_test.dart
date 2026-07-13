@@ -19,6 +19,7 @@ class MockCategoryDao extends Mock implements CategoryDao {}
 class MockConnectivityNotifier extends Mock implements ConnectivityNotifier {}
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   late MockSyncMetaDao mockSyncMetaDao;
   late MockTransactionDao mockTransactionDao;
   late MockCategoryDao mockCategoryDao;
@@ -181,7 +182,17 @@ void main() {
           ));
 
       when(() => mockSyncMetaDao.getPendingChanges())
-          .thenAnswer((_) async => []);
+          .thenAnswer((_) async => [
+            PendingChange(
+              id: 1,
+              entityType: 'transaction',
+              entityId: 'tx-1',
+              action: 'create',
+              payload: '{}',
+              createdAt: '2026-07-11T00:00:00Z',
+              retryCount: 0,
+            ),
+          ]);
 
       final engine = SyncEngine(
         syncService: SyncService((request) async {
@@ -212,6 +223,92 @@ void main() {
 
       await controller.close();
       engine.dispose();
+    });
+
+    test('syncNow gates on autoSyncEnabled', () async {
+      when(() => mockConnectivity.isOnline).thenReturn(true);
+
+      when(() => mockSyncMetaDao.getMeta('user-1', 'personal'))
+          .thenAnswer((_) async => SyncMetaData(
+            scopeId: 'user-1',
+            scopeType: 'personal',
+            lastCheckpoint: 10,
+            lastSyncedAt: null,
+          ));
+
+      when(() => mockSyncMetaDao.getPendingChanges())
+          .thenAnswer((_) async => [
+            PendingChange(
+              id: 1,
+              entityType: 'transaction',
+              entityId: 'tx-1',
+              action: 'create',
+              payload: '{}',
+              createdAt: '2026-07-11T00:00:00Z',
+              retryCount: 0,
+            ),
+          ]);
+
+      final engine = SyncEngine(
+        syncService: SyncService((request) async {
+          return SyncResponse(
+            newCheckpoint: Int64(42),
+            remoteChanges: [],
+            conflicts: [],
+          );
+        }),
+        syncMetaDao: mockSyncMetaDao,
+        transactionDao: mockTransactionDao,
+        categoryDao: mockCategoryDao,
+        connectivityNotifier: mockConnectivity,
+        scopeId: 'user-1',
+        scopeType: 'personal',
+      );
+
+      engine.autoSyncEnabled = false;
+      final result = await engine.syncNow();
+
+      // syncNow still works when called directly regardless of autoSyncEnabled
+      expect(result, SyncResult.success);
+      verify(() => mockSyncMetaDao.upsertMeta(any())).called(1);
+    });
+
+    test('syncStatusStream emits syncing then success', () async {
+      when(() => mockConnectivity.isOnline).thenReturn(true);
+
+      when(() => mockSyncMetaDao.getMeta('user-1', 'personal'))
+          .thenAnswer((_) async => SyncMetaData(
+            scopeId: 'user-1',
+            scopeType: 'personal',
+            lastCheckpoint: 10,
+            lastSyncedAt: null,
+          ));
+
+      when(() => mockSyncMetaDao.getPendingChanges())
+          .thenAnswer((_) async => []);
+
+      final engine = SyncEngine(
+        syncService: SyncService((request) async {
+          return SyncResponse(
+            newCheckpoint: Int64(42),
+            remoteChanges: [],
+            conflicts: [],
+          );
+        }),
+        syncMetaDao: mockSyncMetaDao,
+        transactionDao: mockTransactionDao,
+        categoryDao: mockCategoryDao,
+        connectivityNotifier: mockConnectivity,
+        scopeId: 'user-1',
+        scopeType: 'personal',
+      );
+
+      final statuses = <SyncStatus>[];
+      engine.syncStatusStream.listen(statuses.add);
+      await engine.syncNow();
+      await Future.delayed(Duration.zero);
+
+      expect(statuses, [SyncStatus.syncing, SyncStatus.success]);
     });
   });
 }

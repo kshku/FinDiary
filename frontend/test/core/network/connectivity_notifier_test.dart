@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -20,7 +22,7 @@ void main() {
       when(() => mockConnectivity.checkConnectivity())
           .thenAnswer((_) async => [ConnectivityResult.wifi]);
       when(() => mockConnectivity.onConnectivityChanged)
-          .thenAnswer((_) => const Stream<bool>.empty());
+          .thenAnswer((_) => const Stream<List<ConnectivityResult>>.empty());
 
       await notifier.initialize();
 
@@ -31,7 +33,7 @@ void main() {
       when(() => mockConnectivity.checkConnectivity())
           .thenAnswer((_) async => [ConnectivityResult.none]);
       when(() => mockConnectivity.onConnectivityChanged)
-          .thenAnswer((_) => const Stream<bool>.empty());
+          .thenAnswer((_) => const Stream<List<ConnectivityResult>>.empty());
 
       await notifier.initialize();
 
@@ -39,18 +41,22 @@ void main() {
     });
 
     test('onConnectivityChanged emits when state changes', () async {
+      final controller = StreamController<List<ConnectivityResult>>();
       when(() => mockConnectivity.checkConnectivity())
           .thenAnswer((_) async => [ConnectivityResult.none]);
       when(() => mockConnectivity.onConnectivityChanged)
-          .thenAnswer((_) => Stream.value([ConnectivityResult.wifi]));
+          .thenAnswer((_) => controller.stream);
 
       final states = <bool>[];
       notifier.onConnectivityChanged.listen(states.add);
 
       await notifier.initialize();
+      controller.add([ConnectivityResult.wifi]);
+      await Future.delayed(Duration.zero);
 
       expect(notifier.isOnline, isTrue);
       expect(states, [true]);
+      await controller.close();
     });
 
     test('isOnline defaults to false', () {

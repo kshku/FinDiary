@@ -14,6 +14,7 @@ import '../network/connectivity_notifier.dart';
 import 'sync_service.dart';
 
 enum SyncResult { success, failure }
+enum SyncStatus { idle, syncing, success, failure }
 
 class SyncEngine with WidgetsBindingObserver {
   final SyncService _syncService;
@@ -30,6 +31,10 @@ class SyncEngine with WidgetsBindingObserver {
   Timer? _debounceTimer;
   int _backoffDelay = 1;
   static const int _maxBackoff = 30;
+  bool autoSyncEnabled = true;
+  final StreamController<SyncStatus> _syncStatusController =
+      StreamController<SyncStatus>.broadcast();
+  Stream<SyncStatus> get syncStatusStream => _syncStatusController.stream;
 
   SyncEngine({
     required SyncService syncService,
@@ -51,7 +56,7 @@ class SyncEngine with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _transactionDao.onPendingChange = _onPendingChange;
     _connectivitySub = _connectivityNotifier.onConnectivityChanged.listen((online) {
-      if (online) {
+      if (online && autoSyncEnabled) {
         unawaited(syncNow());
       }
     });
@@ -62,17 +67,18 @@ class SyncEngine with WidgetsBindingObserver {
     _debounceTimer?.cancel();
     _transactionDao.onPendingChange = null;
     _connectivitySub?.cancel();
+    _syncStatusController.close();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
+    if (state == AppLifecycleState.resumed && autoSyncEnabled) {
       unawaited(syncNow());
     }
   }
 
   void _onPendingChange() {
-    if (_isApplyingRemote) return;
+    if (_isApplyingRemote || !autoSyncEnabled) return;
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
       unawaited(syncNow());
@@ -83,6 +89,7 @@ class SyncEngine with WidgetsBindingObserver {
     if (_isSyncing) return SyncResult.success;
     if (!_connectivityNotifier.isOnline) return SyncResult.failure;
     _isSyncing = true;
+    _syncStatusController.add(SyncStatus.syncing);
 
     try {
       final meta = await _syncMetaDao.getMeta(_scopeId, _scopeType);
@@ -91,6 +98,7 @@ class SyncEngine with WidgetsBindingObserver {
 
       if (pendingChanges.isEmpty && meta != null) {
         _resetBackoff();
+        _syncStatusController.add(SyncStatus.success);
         return SyncResult.success;
       }
 
@@ -115,9 +123,11 @@ class SyncEngine with WidgetsBindingObserver {
       ));
 
       _resetBackoff();
+      _syncStatusController.add(SyncStatus.success);
       return SyncResult.success;
     } catch (_) {
       _scheduleRetry();
+      _syncStatusController.add(SyncStatus.failure);
       return SyncResult.failure;
     } finally {
       _isSyncing = false;
