@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:findiary/core/database/daos/transaction_dao.dart';
 import 'package:findiary/core/database/database.dart';
 import 'package:findiary/core/di/injection.dart';
+import 'package:findiary/core/grpc/dashboard_service.dart';
 import 'bloc/dashboard_bloc.dart';
 import 'bloc/dashboard_event.dart';
 import 'bloc/dashboard_state.dart';
@@ -14,7 +15,10 @@ class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => DashboardBloc(transactionDao: sl<TransactionDao>()),
+      create: (_) => DashboardBloc(
+        transactionDao: sl<TransactionDao>(),
+        dashboardGrpcService: sl<DashboardGrpcService>(),
+      ),
       child: const _DashboardView(),
     );
   }
