@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package findiary.v1;
+
+option go_package = "github.com/kshku/findiary/backend/internal/api/findiary/v1";
+
+import "findiary/v1/common.proto";
+
+message GetDashboardRequest {
+  optional string family_id = 1;
+  int32 months = 2;
+}
+
+message MonthlySummary {
+  string year_month = 1;
+  double total_income = 2;
+  double total_expense = 3;
+}
+
+message GetDashboardResponse {
+  double total_income = 1;
+  double total_expense = 2;
+  repeated MonthlySummary monthly = 3;
+  repeated Transaction recent_transactions = 4;
+}
+
+service DashboardService {
+  rpc GetDashboard(GetDashboardRequest) returns (GetDashboardResponse);
+}
