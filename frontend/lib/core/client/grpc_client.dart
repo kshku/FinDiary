@@ -1,6 +1,7 @@
 import 'package:grpc/grpc.dart';
 import 'auth_interceptor.dart';
 import '../../generated/findiary/v1/sync_service.pbgrpc.dart' as sync_grpc;
+import '../../generated/findiary/v1/dashboard_service.pbgrpc.dart' as dashboard_grpc;
 
 class GrpcClient {
   late final ClientChannel _channel;
@@ -28,6 +29,10 @@ class GrpcClient {
 
   sync_grpc.SyncServiceClient createSyncServiceClient() {
     return sync_grpc.SyncServiceClient(_channel);
+  }
+
+  dashboard_grpc.DashboardServiceClient createDashboardServiceClient() {
+    return dashboard_grpc.DashboardServiceClient(_channel);
   }
 
   Future<void> shutdown() async {
