@@ -10,7 +10,7 @@ void main() {
         totalExpense: 30000,
         monthly: [MonthlySummary(yearMonth: '2026-07', totalIncome: 50000, totalExpense: 30000)],
       );
-      final service = DashboardGrpcService((_) async => response);
+      final service = DashboardGrpcService.fromFunction((_) async => response);
 
       final result = await service.getDashboard();
       expect(result.totalIncome, 50000);
