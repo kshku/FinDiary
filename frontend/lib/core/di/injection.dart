@@ -11,6 +11,7 @@ import '../database/daos/sync_meta_dao.dart';
 import '../grpc/family_service.dart';
 import '../grpc/category_service.dart';
 import '../grpc/transaction_service.dart';
+import '../grpc/dashboard_service.dart';
 import '../sync/sync_service.dart';
 import '../network/connectivity_notifier.dart';
 import '../sync/sync_engine.dart';
@@ -73,4 +74,7 @@ Future<void> initDependencies() async {
     scopeType: 'personal',
   );
   sl.registerLazySingleton<SyncEngine>(() => syncEngine);
+
+  final dashboardGrpcClient = grpcClient.createDashboardServiceClient();
+  sl.registerLazySingleton<DashboardGrpcService>(() => DashboardGrpcService(dashboardGrpcClient));
 }
