@@ -76,5 +76,5 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<SyncEngine>(() => syncEngine);
 
   final dashboardGrpcClient = grpcClient.createDashboardServiceClient();
-  sl.registerLazySingleton<DashboardGrpcService>(() => DashboardGrpcService(dashboardGrpcClient));
+  sl.registerLazySingleton<DashboardGrpcService>(() => DashboardGrpcService.fromClient(dashboardGrpcClient));
 }
