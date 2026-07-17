@@ -5,6 +5,7 @@ import 'package:findiary/core/database/daos/transaction_dao.dart';
 import 'package:findiary/core/database/database.dart';
 import 'package:findiary/core/di/injection.dart';
 import 'package:findiary/core/grpc/dashboard_service.dart';
+import 'package:findiary/features/dashboard/widgets/monthly_chart.dart';
 import 'bloc/dashboard_bloc.dart';
 import 'bloc/dashboard_event.dart';
 import 'bloc/dashboard_state.dart';
@@ -96,6 +97,8 @@ class _DashboardViewState extends State<_DashboardView> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 24),
+                  MonthlyChart(summaries: state.monthlySummaries),
                   const SizedBox(height: 24),
                   Text('Recent Transactions', style: theme.textTheme.titleMedium),
                   const SizedBox(height: 8),
