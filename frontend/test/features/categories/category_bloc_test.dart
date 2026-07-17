@@ -46,7 +46,7 @@ void main() {
         when(() => mockCategoryDao.listCategories())
             .thenAnswer((_) async => [incomeCategory, expenseCategory]);
       },
-      build: () => CategoryBloc(categoryDao: mockCategoryDao),
+      build: () => CategoryBloc(_categoryDao: mockCategoryDao),
       act: (bloc) => bloc.add(const CategoryRequested()),
       expect: () => [
         const CategoryLoading(),
@@ -63,7 +63,7 @@ void main() {
         when(() => mockCategoryDao.listCategories())
             .thenThrow(Exception('db error'));
       },
-      build: () => CategoryBloc(categoryDao: mockCategoryDao),
+      build: () => CategoryBloc(_categoryDao: mockCategoryDao),
       act: (bloc) => bloc.add(const CategoryRequested()),
       expect: () => [
         const CategoryLoading(),

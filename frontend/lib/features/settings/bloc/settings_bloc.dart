@@ -11,11 +11,9 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
   SettingsBloc({
     required AuthService authService,
-    required ThemeCubit themeCubit,
-    required SharedPreferences prefs,
-  })  : _themeCubit = themeCubit,
-        _prefs = prefs,
-        super(const SettingsInitial()) {
+    required this._themeCubit,
+    required this._prefs,
+  }) : super(const SettingsInitial()) {
     on<SettingsRequested>(_onRequested);
     on<ThemeChanged>(_onThemeChanged);
   }

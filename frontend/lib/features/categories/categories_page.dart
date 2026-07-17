@@ -13,7 +13,7 @@ class CategoriesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => CategoryBloc(categoryDao: sl<CategoryDao>()),
+      create: (_) => CategoryBloc(_categoryDao: sl<CategoryDao>()),
       child: const _CategoriesView(),
     );
   }

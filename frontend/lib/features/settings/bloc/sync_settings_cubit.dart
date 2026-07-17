@@ -35,13 +35,10 @@ class SyncSettingsCubit extends Cubit<SyncSettingsState> {
   StreamSubscription<SyncStatus>? _statusSub;
 
   SyncSettingsCubit({
-    required SharedPreferences prefs,
-    required SyncMetaDao syncMetaDao,
-    required SyncEngine syncEngine,
-  })  : _prefs = prefs,
-        _syncMetaDao = syncMetaDao,
-        _syncEngine = syncEngine,
-        super(const SyncSettingsState());
+    required this._prefs,
+    required this._syncMetaDao,
+    required this._syncEngine,
+  }) : super(const SyncSettingsState());
 
   Future<void> load() async {
     try {

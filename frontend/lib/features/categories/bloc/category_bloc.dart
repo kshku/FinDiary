@@ -6,9 +6,8 @@ import 'category_state.dart';
 class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   final CategoryDao _categoryDao;
 
-  CategoryBloc({required CategoryDao categoryDao})
-      : _categoryDao = categoryDao,
-        super(const CategoryInitial()) {
+  CategoryBloc({required this._categoryDao})
+      : super(const CategoryInitial()) {
     on<CategoryRequested>(_onRequested);
   }
 

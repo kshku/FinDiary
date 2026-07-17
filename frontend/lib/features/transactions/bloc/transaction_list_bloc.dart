@@ -8,10 +8,9 @@ class TransactionListBloc extends Bloc<TransactionListEvent, TransactionListStat
   final TransactionDao _transactionDao;
 
   TransactionListBloc({
-    required TransactionDao transactionDao,
+    required this._transactionDao,
     required SyncEngine syncEngine,
-  })  : _transactionDao = transactionDao,
-        super(const TransactionListInitial()) {
+  }) : super(const TransactionListInitial()) {
     on<TransactionListRequested>(_onRequested);
     on<TransactionListFilterChanged>(_onFilterChanged);
   }

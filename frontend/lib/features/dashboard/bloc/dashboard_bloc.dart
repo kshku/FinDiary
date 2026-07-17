@@ -10,11 +10,9 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   final DashboardGrpcService _dashboardGrpcService;
 
   DashboardBloc({
-    required TransactionDao transactionDao,
-    required DashboardGrpcService dashboardGrpcService,
-  })  : _transactionDao = transactionDao,
-        _dashboardGrpcService = dashboardGrpcService,
-        super(const DashboardInitial()) {
+    required this._transactionDao,
+    required this._dashboardGrpcService,
+  }) : super(const DashboardInitial()) {
     on<DashboardRequested>(_onRequested);
   }
 
