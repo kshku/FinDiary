@@ -1,4 +1,3 @@
-import '../../generated/findiary/v1/dashboard_service.pb.dart';
 import '../../generated/findiary/v1/dashboard_service.pbgrpc.dart';
 
 class DashboardGrpcService {
