@@ -4,10 +4,11 @@ import '../../generated/findiary/v1/dashboard_service.pbgrpc.dart';
 class DashboardGrpcService {
   final Future<GetDashboardResponse> Function(GetDashboardRequest) _perform;
 
-  DashboardGrpcService.fromClient(DashboardServiceClient client)
-      : _perform = (req) => client.getDashboard(req);
+  DashboardGrpcService(this._perform);
 
-  DashboardGrpcService.fromFunction(this._perform);
+  factory DashboardGrpcService.fromClient(DashboardServiceClient client) {
+    return DashboardGrpcService((req) => client.getDashboard(req));
+  }
 
   Future<GetDashboardResponse> getDashboard({String? familyId, int months = 6}) {
     final request = GetDashboardRequest(
