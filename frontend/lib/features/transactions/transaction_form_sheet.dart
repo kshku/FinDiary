@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 import 'package:drift/drift.dart' hide Column;
 import 'package:findiary/core/database/database.dart';
 import 'package:findiary/core/database/daos/transaction_dao.dart';
+import 'package:findiary/core/database/daos/category_dao.dart';
 import 'package:findiary/core/di/injection.dart';
 
 class TransactionFormSheet extends StatefulWidget {
@@ -25,11 +26,13 @@ class TransactionFormSheet extends StatefulWidget {
 
 class _TransactionFormSheetState extends State<TransactionFormSheet> {
   final _formKey = GlobalKey<FormState>();
+  final _categoryDao = sl<CategoryDao>();
   late String _type;
   late TextEditingController _amountCtrl;
   late TextEditingController _descCtrl;
   late String _date;
   String? _categoryId;
+  List<Category> _categories = [];
 
   @override
   void initState() {
@@ -41,6 +44,7 @@ class _TransactionFormSheetState extends State<TransactionFormSheet> {
     _descCtrl = TextEditingController(text: widget.transaction?.description ?? '');
     _date = widget.transaction?.date ?? DateFormat('yyyy-MM-dd').format(DateTime.now());
     _categoryId = widget.transaction?.categoryId;
+    _loadCategories();
   }
 
   @override
@@ -48,6 +52,11 @@ class _TransactionFormSheetState extends State<TransactionFormSheet> {
     _amountCtrl.dispose();
     _descCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadCategories() async {
+    final cats = await _categoryDao.listCategories(type: _type);
+    setState(() => _categories = cats);
   }
 
   Future<void> _save() async {
@@ -108,7 +117,10 @@ class _TransactionFormSheetState extends State<TransactionFormSheet> {
                 ButtonSegment(value: 'expense', label: Text('Expense')),
               ],
               selected: {_type},
-              onSelectionChanged: (v) => setState(() => _type = v.first),
+              onSelectionChanged: (v) {
+                setState(() => _type = v.first);
+                _loadCategories();
+              },
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -136,6 +148,31 @@ class _TransactionFormSheetState extends State<TransactionFormSheet> {
                   setState(() => _date = DateFormat('yyyy-MM-dd').format(picked));
                 }
               },
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<String>(
+              value: _categoryId,
+              decoration: const InputDecoration(labelText: 'Category'),
+              items: _categories.map((c) {
+                final ledger = c.name[0].toUpperCase();
+                return DropdownMenuItem(
+                  value: c.id,
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: c.color != null
+                            ? Color(int.parse(c.color!.replaceFirst('#', '0xFF')))
+                            : Theme.of(context).colorScheme.primaryContainer,
+                        radius: 14,
+                        child: Text(ledger, style: const TextStyle(fontSize: 12)),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(c.name),
+                    ],
+                  ),
+                );
+              }).toList(),
+              onChanged: (v) => setState(() => _categoryId = v),
             ),
             const SizedBox(height: 12),
             TextFormField(
