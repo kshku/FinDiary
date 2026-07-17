@@ -24,7 +24,7 @@ void main() {
         monthly: [MonthlySummary(yearMonth: '2026-07', totalIncome: 50000, totalExpense: 30000)],
       );
       when(() => mockClient.getDashboard(any())).thenAnswer(
-        (_) async => ResponseFuture<GetDashboardResponse>(Future.value(response)),
+        (_) => ResponseFuture<GetDashboardResponse>.value(response),
       );
 
       final result = await service.getDashboard();

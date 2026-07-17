@@ -151,7 +151,7 @@ class _TransactionFormSheetState extends State<TransactionFormSheet> {
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
-              value: _categoryId,
+              initialValue: _categoryId,
               decoration: const InputDecoration(labelText: 'Category'),
               items: _categories.map((c) {
                 final ledger = c.name[0].toUpperCase();
