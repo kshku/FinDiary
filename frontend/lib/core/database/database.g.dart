@@ -2914,6 +2914,562 @@ class PendingChangesCompanion extends UpdateCompanion<PendingChange> {
   }
 }
 
+class $InvitationsTable extends Invitations
+    with TableInfo<$InvitationsTable, Invitation> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $InvitationsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _familyIdMeta = const VerificationMeta(
+    'familyId',
+  );
+  @override
+  late final GeneratedColumn<String> familyId = GeneratedColumn<String>(
+    'family_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _familyNameMeta = const VerificationMeta(
+    'familyName',
+  );
+  @override
+  late final GeneratedColumn<String> familyName = GeneratedColumn<String>(
+    'family_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _emailMeta = const VerificationMeta('email');
+  @override
+  late final GeneratedColumn<String> email = GeneratedColumn<String>(
+    'email',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  @override
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+    'code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdByMeta = const VerificationMeta(
+    'createdBy',
+  );
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+    'created_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _expiresAtMeta = const VerificationMeta(
+    'expiresAt',
+  );
+  @override
+  late final GeneratedColumn<String> expiresAt = GeneratedColumn<String>(
+    'expires_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    familyId,
+    familyName,
+    email,
+    code,
+    status,
+    createdBy,
+    createdAt,
+    expiresAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'invitations';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Invitation> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('family_id')) {
+      context.handle(
+        _familyIdMeta,
+        familyId.isAcceptableOrUnknown(data['family_id']!, _familyIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_familyIdMeta);
+    }
+    if (data.containsKey('family_name')) {
+      context.handle(
+        _familyNameMeta,
+        familyName.isAcceptableOrUnknown(data['family_name']!, _familyNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_familyNameMeta);
+    }
+    if (data.containsKey('email')) {
+      context.handle(
+        _emailMeta,
+        email.isAcceptableOrUnknown(data['email']!, _emailMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_emailMeta);
+    }
+    if (data.containsKey('code')) {
+      context.handle(
+        _codeMeta,
+        code.isAcceptableOrUnknown(data['code']!, _codeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_codeMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('expires_at')) {
+      context.handle(
+        _expiresAtMeta,
+        expiresAt.isAcceptableOrUnknown(data['expires_at']!, _expiresAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_expiresAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Invitation map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Invitation(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      familyId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}family_id'],
+      )!,
+      familyName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}family_name'],
+      )!,
+      email: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}email'],
+      )!,
+      code: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}code'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      createdBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_by'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+      expiresAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}expires_at'],
+      )!,
+    );
+  }
+
+  @override
+  $InvitationsTable createAlias(String alias) {
+    return $InvitationsTable(attachedDatabase, alias);
+  }
+}
+
+class Invitation extends DataClass implements Insertable<Invitation> {
+  final String id;
+  final String familyId;
+  final String familyName;
+  final String email;
+  final String code;
+  final String status;
+  final String createdBy;
+  final String createdAt;
+  final String expiresAt;
+  const Invitation({
+    required this.id,
+    required this.familyId,
+    required this.familyName,
+    required this.email,
+    required this.code,
+    required this.status,
+    required this.createdBy,
+    required this.createdAt,
+    required this.expiresAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['family_id'] = Variable<String>(familyId);
+    map['family_name'] = Variable<String>(familyName);
+    map['email'] = Variable<String>(email);
+    map['code'] = Variable<String>(code);
+    map['status'] = Variable<String>(status);
+    map['created_by'] = Variable<String>(createdBy);
+    map['created_at'] = Variable<String>(createdAt);
+    map['expires_at'] = Variable<String>(expiresAt);
+    return map;
+  }
+
+  InvitationsCompanion toCompanion(bool nullToAbsent) {
+    return InvitationsCompanion(
+      id: Value(id),
+      familyId: Value(familyId),
+      familyName: Value(familyName),
+      email: Value(email),
+      code: Value(code),
+      status: Value(status),
+      createdBy: Value(createdBy),
+      createdAt: Value(createdAt),
+      expiresAt: Value(expiresAt),
+    );
+  }
+
+  factory Invitation.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Invitation(
+      id: serializer.fromJson<String>(json['id']),
+      familyId: serializer.fromJson<String>(json['familyId']),
+      familyName: serializer.fromJson<String>(json['familyName']),
+      email: serializer.fromJson<String>(json['email']),
+      code: serializer.fromJson<String>(json['code']),
+      status: serializer.fromJson<String>(json['status']),
+      createdBy: serializer.fromJson<String>(json['createdBy']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      expiresAt: serializer.fromJson<String>(json['expiresAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'familyId': serializer.toJson<String>(familyId),
+      'familyName': serializer.toJson<String>(familyName),
+      'email': serializer.toJson<String>(email),
+      'code': serializer.toJson<String>(code),
+      'status': serializer.toJson<String>(status),
+      'createdBy': serializer.toJson<String>(createdBy),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'expiresAt': serializer.toJson<String>(expiresAt),
+    };
+  }
+
+  Invitation copyWith({
+    String? id,
+    String? familyId,
+    String? familyName,
+    String? email,
+    String? code,
+    String? status,
+    String? createdBy,
+    String? createdAt,
+    String? expiresAt,
+  }) => Invitation(
+    id: id ?? this.id,
+    familyId: familyId ?? this.familyId,
+    familyName: familyName ?? this.familyName,
+    email: email ?? this.email,
+    code: code ?? this.code,
+    status: status ?? this.status,
+    createdBy: createdBy ?? this.createdBy,
+    createdAt: createdAt ?? this.createdAt,
+    expiresAt: expiresAt ?? this.expiresAt,
+  );
+  Invitation copyWithCompanion(InvitationsCompanion data) {
+    return Invitation(
+      id: data.id.present ? data.id.value : this.id,
+      familyId: data.familyId.present ? data.familyId.value : this.familyId,
+      familyName: data.familyName.present
+          ? data.familyName.value
+          : this.familyName,
+      email: data.email.present ? data.email.value : this.email,
+      code: data.code.present ? data.code.value : this.code,
+      status: data.status.present ? data.status.value : this.status,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      expiresAt: data.expiresAt.present ? data.expiresAt.value : this.expiresAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Invitation(')
+          ..write('id: $id, ')
+          ..write('familyId: $familyId, ')
+          ..write('familyName: $familyName, ')
+          ..write('email: $email, ')
+          ..write('code: $code, ')
+          ..write('status: $status, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('expiresAt: $expiresAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    familyId,
+    familyName,
+    email,
+    code,
+    status,
+    createdBy,
+    createdAt,
+    expiresAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Invitation &&
+          other.id == this.id &&
+          other.familyId == this.familyId &&
+          other.familyName == this.familyName &&
+          other.email == this.email &&
+          other.code == this.code &&
+          other.status == this.status &&
+          other.createdBy == this.createdBy &&
+          other.createdAt == this.createdAt &&
+          other.expiresAt == this.expiresAt);
+}
+
+class InvitationsCompanion extends UpdateCompanion<Invitation> {
+  final Value<String> id;
+  final Value<String> familyId;
+  final Value<String> familyName;
+  final Value<String> email;
+  final Value<String> code;
+  final Value<String> status;
+  final Value<String> createdBy;
+  final Value<String> createdAt;
+  final Value<String> expiresAt;
+  final Value<int> rowid;
+  const InvitationsCompanion({
+    this.id = const Value.absent(),
+    this.familyId = const Value.absent(),
+    this.familyName = const Value.absent(),
+    this.email = const Value.absent(),
+    this.code = const Value.absent(),
+    this.status = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.expiresAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  InvitationsCompanion.insert({
+    required String id,
+    required String familyId,
+    required String familyName,
+    required String email,
+    required String code,
+    required String status,
+    required String createdBy,
+    required String createdAt,
+    required String expiresAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       familyId = Value(familyId),
+       familyName = Value(familyName),
+       email = Value(email),
+       code = Value(code),
+       status = Value(status),
+       createdBy = Value(createdBy),
+       createdAt = Value(createdAt),
+       expiresAt = Value(expiresAt);
+  static Insertable<Invitation> custom({
+    Expression<String>? id,
+    Expression<String>? familyId,
+    Expression<String>? familyName,
+    Expression<String>? email,
+    Expression<String>? code,
+    Expression<String>? status,
+    Expression<String>? createdBy,
+    Expression<String>? createdAt,
+    Expression<String>? expiresAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (familyId != null) 'family_id': familyId,
+      if (familyName != null) 'family_name': familyName,
+      if (email != null) 'email': email,
+      if (code != null) 'code': code,
+      if (status != null) 'status': status,
+      if (createdBy != null) 'created_by': createdBy,
+      if (createdAt != null) 'created_at': createdAt,
+      if (expiresAt != null) 'expires_at': expiresAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  InvitationsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? familyId,
+    Value<String>? familyName,
+    Value<String>? email,
+    Value<String>? code,
+    Value<String>? status,
+    Value<String>? createdBy,
+    Value<String>? createdAt,
+    Value<String>? expiresAt,
+    Value<int>? rowid,
+  }) {
+    return InvitationsCompanion(
+      id: id ?? this.id,
+      familyId: familyId ?? this.familyId,
+      familyName: familyName ?? this.familyName,
+      email: email ?? this.email,
+      code: code ?? this.code,
+      status: status ?? this.status,
+      createdBy: createdBy ?? this.createdBy,
+      createdAt: createdAt ?? this.createdAt,
+      expiresAt: expiresAt ?? this.expiresAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (familyId.present) {
+      map['family_id'] = Variable<String>(familyId.value);
+    }
+    if (familyName.present) {
+      map['family_name'] = Variable<String>(familyName.value);
+    }
+    if (email.present) {
+      map['email'] = Variable<String>(email.value);
+    }
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (expiresAt.present) {
+      map['expires_at'] = Variable<String>(expiresAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InvitationsCompanion(')
+          ..write('id: $id, ')
+          ..write('familyId: $familyId, ')
+          ..write('familyName: $familyName, ')
+          ..write('email: $email, ')
+          ..write('code: $code, ')
+          ..write('status: $status, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('expiresAt: $expiresAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2923,6 +3479,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $FamilyMembersTable familyMembers = $FamilyMembersTable(this);
   late final $SyncMetaTable syncMeta = $SyncMetaTable(this);
   late final $PendingChangesTable pendingChanges = $PendingChangesTable(this);
+  late final $InvitationsTable invitations = $InvitationsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2934,6 +3491,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     familyMembers,
     syncMeta,
     pendingChanges,
+    invitations,
   ];
 }
 
@@ -4422,6 +4980,284 @@ typedef $$PendingChangesTableProcessedTableManager =
       PendingChange,
       PrefetchHooks Function()
     >;
+typedef $$InvitationsTableCreateCompanionBuilder =
+    InvitationsCompanion Function({
+      required String id,
+      required String familyId,
+      required String familyName,
+      required String email,
+      required String code,
+      required String status,
+      required String createdBy,
+      required String createdAt,
+      required String expiresAt,
+      Value<int> rowid,
+    });
+typedef $$InvitationsTableUpdateCompanionBuilder =
+    InvitationsCompanion Function({
+      Value<String> id,
+      Value<String> familyId,
+      Value<String> familyName,
+      Value<String> email,
+      Value<String> code,
+      Value<String> status,
+      Value<String> createdBy,
+      Value<String> createdAt,
+      Value<String> expiresAt,
+      Value<int> rowid,
+    });
+
+class $$InvitationsTableFilterComposer
+    extends Composer<_$AppDatabase, $InvitationsTable> {
+  $$InvitationsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get familyId => $composableBuilder(
+    column: $table.familyId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get familyName => $composableBuilder(
+    column: $table.familyName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get email => $composableBuilder(
+    column: $table.email,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get expiresAt => $composableBuilder(
+    column: $table.expiresAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$InvitationsTableOrderingComposer
+    extends Composer<_$AppDatabase, $InvitationsTable> {
+  $$InvitationsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get familyId => $composableBuilder(
+    column: $table.familyId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get familyName => $composableBuilder(
+    column: $table.familyName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get email => $composableBuilder(
+    column: $table.email,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get expiresAt => $composableBuilder(
+    column: $table.expiresAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$InvitationsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $InvitationsTable> {
+  $$InvitationsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get familyId =>
+      $composableBuilder(column: $table.familyId, builder: (column) => column);
+
+  GeneratedColumn<String> get familyName => $composableBuilder(
+    column: $table.familyName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get email =>
+      $composableBuilder(column: $table.email, builder: (column) => column);
+
+  GeneratedColumn<String> get code =>
+      $composableBuilder(column: $table.code, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<String> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get expiresAt =>
+      $composableBuilder(column: $table.expiresAt, builder: (column) => column);
+}
+
+class $$InvitationsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $InvitationsTable,
+          Invitation,
+          $$InvitationsTableFilterComposer,
+          $$InvitationsTableOrderingComposer,
+          $$InvitationsTableAnnotationComposer,
+          $$InvitationsTableCreateCompanionBuilder,
+          $$InvitationsTableUpdateCompanionBuilder,
+          (
+            Invitation,
+            BaseReferences<_$AppDatabase, $InvitationsTable, Invitation>,
+          ),
+          Invitation,
+          PrefetchHooks Function()
+        > {
+  $$InvitationsTableTableManager(_$AppDatabase db, $InvitationsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$InvitationsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$InvitationsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$InvitationsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> familyId = const Value.absent(),
+                Value<String> familyName = const Value.absent(),
+                Value<String> email = const Value.absent(),
+                Value<String> code = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String> createdBy = const Value.absent(),
+                Value<String> createdAt = const Value.absent(),
+                Value<String> expiresAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => InvitationsCompanion(
+                id: id,
+                familyId: familyId,
+                familyName: familyName,
+                email: email,
+                code: code,
+                status: status,
+                createdBy: createdBy,
+                createdAt: createdAt,
+                expiresAt: expiresAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String familyId,
+                required String familyName,
+                required String email,
+                required String code,
+                required String status,
+                required String createdBy,
+                required String createdAt,
+                required String expiresAt,
+                Value<int> rowid = const Value.absent(),
+              }) => InvitationsCompanion.insert(
+                id: id,
+                familyId: familyId,
+                familyName: familyName,
+                email: email,
+                code: code,
+                status: status,
+                createdBy: createdBy,
+                createdAt: createdAt,
+                expiresAt: expiresAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$InvitationsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $InvitationsTable,
+      Invitation,
+      $$InvitationsTableFilterComposer,
+      $$InvitationsTableOrderingComposer,
+      $$InvitationsTableAnnotationComposer,
+      $$InvitationsTableCreateCompanionBuilder,
+      $$InvitationsTableUpdateCompanionBuilder,
+      (
+        Invitation,
+        BaseReferences<_$AppDatabase, $InvitationsTable, Invitation>,
+      ),
+      Invitation,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -4438,4 +5274,6 @@ class $AppDatabaseManager {
       $$SyncMetaTableTableManager(_db, _db.syncMeta);
   $$PendingChangesTableTableManager get pendingChanges =>
       $$PendingChangesTableTableManager(_db, _db.pendingChanges);
+  $$InvitationsTableTableManager get invitations =>
+      $$InvitationsTableTableManager(_db, _db.invitations);
 }

@@ -77,3 +77,18 @@ class PendingChanges extends Table {
   TextColumn get createdAt => text()();
   IntColumn get retryCount => integer().withDefault(const Constant(0))();
 }
+
+class Invitations extends Table {
+  TextColumn get id => text()();
+  TextColumn get familyId => text()();
+  TextColumn get familyName => text()();
+  TextColumn get email => text()();
+  TextColumn get code => text()();
+  TextColumn get status => text()();
+  TextColumn get createdBy => text()();
+  TextColumn get createdAt => text()();
+  TextColumn get expiresAt => text()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}

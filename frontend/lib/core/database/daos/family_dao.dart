@@ -35,4 +35,16 @@ class FamilyDao extends DatabaseAccessor<AppDatabase> {
       ..where((m) => m.familyId.equals(familyId) & m.userId.equals(userId))
     ).go();
   }
+
+  Future<List<Invitation>> listInvitations() {
+    return select(db.invitations).get();
+  }
+
+  Future<void> upsertInvitation(InvitationsCompanion entry) {
+    return into(db.invitations).insertOnConflictUpdate(entry);
+  }
+
+  Future<void> removeInvitation(String id) {
+    return (delete(db.invitations)..where((i) => i.id.equals(id))).go();
+  }
 }

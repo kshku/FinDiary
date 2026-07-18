@@ -19,6 +19,7 @@ part 'database.g.dart';
     FamilyMembers,
     SyncMeta,
     PendingChanges,
+    Invitations,
   ],
   daos: [
     TransactionDao,
