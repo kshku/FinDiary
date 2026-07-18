@@ -18,6 +18,40 @@ func NewTransactionRepo(pool *pgxpool.Pool) *TransactionRepo {
 	return &TransactionRepo{pool: pool}
 }
 
+type MonthlyTotal struct {
+	YearMonth    string
+	TotalIncome  float64
+	TotalExpense float64
+}
+
+func (r *TransactionRepo) GetMonthlyTotals(ctx context.Context, userID string, familyID *string, months int) ([]MonthlyTotal, error) {
+	cutoff := time.Now().AddDate(0, -months, 0).Format("2006-01-02")
+	query := `SELECT TO_CHAR(date, 'YYYY-MM') as year_month,
+	                 COALESCE(SUM(CASE WHEN type='income' THEN amount ELSE 0 END), 0) as total_income,
+	                 COALESCE(SUM(CASE WHEN type='expense' THEN amount ELSE 0 END), 0) as total_expense
+	          FROM transactions
+	          WHERE created_by = $1 AND deleted_at IS NULL AND date >= $2
+	            AND (family_id IS NULL OR family_id = $3)
+	          GROUP BY year_month ORDER BY year_month DESC`
+	rows, err := r.pool.Query(ctx, query, userID, cutoff, familyID)
+	if err != nil {
+		return nil, fmt.Errorf("get monthly totals: %w", err)
+	}
+	defer rows.Close()
+	var totals []MonthlyTotal
+	for rows.Next() {
+		var mt MonthlyTotal
+		if err := rows.Scan(&mt.YearMonth, &mt.TotalIncome, &mt.TotalExpense); err != nil {
+			return nil, fmt.Errorf("scan monthly total: %w", err)
+		}
+		totals = append(totals, mt)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("monthly totals rows: %w", err)
+	}
+	return totals, nil
+}
+
 func (r *TransactionRepo) Create(ctx context.Context, tx *domain.Transaction) error {
 	_, err := r.pool.Exec(ctx,
 		`INSERT INTO transactions (id, family_id, created_by, type, amount, currency, category_id, description, date, created_at, updated_at)

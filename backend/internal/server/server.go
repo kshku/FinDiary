@@ -85,6 +85,31 @@ func New(cfg *config.Config, logger *slog.Logger) (*Server, error) {
 	)
 	mux.Handle(txPattern, txHTTPHandler)
 
+	dashboardSvc := service.NewDashboardService(txRepo, familyRepo)
+	dashboardHandler := api.NewDashboardHandler(dashboardSvc)
+
+	syncRepo := repository.NewSyncRepo(db)
+	syncSvc := service.NewSyncService(syncRepo, txRepo, categoryRepo, familyRepo, userRepo)
+	syncHandler := api.NewSyncHandler(syncSvc)
+
+	syncPattern, syncHTTPHandler := pbv1connect.NewSyncServiceHandler(
+		syncHandler,
+		connect.WithInterceptors(
+			LoggingInterceptor(logger),
+			AuthInterceptor(mgr),
+		),
+	)
+	mux.Handle(syncPattern, syncHTTPHandler)
+
+	dashboardPattern, dashboardHTTPHandler := pbv1connect.NewDashboardServiceHandler(
+		dashboardHandler,
+		connect.WithInterceptors(
+			LoggingInterceptor(logger),
+			AuthInterceptor(mgr),
+		),
+	)
+	mux.Handle(dashboardPattern, dashboardHTTPHandler)
+
 	return &Server{
 		cfg:    cfg,
 		logger: logger,

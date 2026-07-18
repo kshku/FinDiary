@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import 'tables.dart';
 import 'daos/transaction_dao.dart';
 import 'daos/category_dao.dart';
+import 'daos/family_dao.dart';
 import 'daos/sync_meta_dao.dart';
 
 part 'database.g.dart';
@@ -22,11 +23,14 @@ part 'database.g.dart';
   daos: [
     TransactionDao,
     CategoryDao,
+    FamilyDao,
     SyncMetaDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
+
+  AppDatabase.forTesting(super.executor);
 
   @override
   int get schemaVersion => 1;
