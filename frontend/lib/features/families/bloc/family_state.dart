@@ -25,6 +25,14 @@ final class FamilyLoaded extends FamilyState {
   List<Object?> get props => [families];
 }
 
+final class FamilyDetailLoaded extends FamilyState {
+  final Family family;
+  final List<FamilyMember> members;
+  const FamilyDetailLoaded({required this.family, required this.members});
+  @override
+  List<Object?> get props => [family, members];
+}
+
 final class FamilyFailure extends FamilyState {
   final String message;
 
