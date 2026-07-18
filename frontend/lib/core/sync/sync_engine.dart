@@ -37,20 +37,14 @@ class SyncEngine with WidgetsBindingObserver {
   Stream<SyncStatus> get syncStatusStream => _syncStatusController.stream;
 
   SyncEngine({
-    required SyncService syncService,
-    required SyncMetaDao syncMetaDao,
-    required TransactionDao transactionDao,
-    required CategoryDao categoryDao,
-    required ConnectivityNotifier connectivityNotifier,
-    required String scopeId,
-    required String scopeType,
-  })  : _syncService = syncService,
-        _syncMetaDao = syncMetaDao,
-        _transactionDao = transactionDao,
-        _categoryDao = categoryDao,
-        _connectivityNotifier = connectivityNotifier,
-        _scopeId = scopeId,
-        _scopeType = scopeType;
+    required this._syncService,
+    required this._syncMetaDao,
+    required this._transactionDao,
+    required this._categoryDao,
+    required this._connectivityNotifier,
+    required this._scopeId,
+    required this._scopeType,
+  });
 
   void start() {
     WidgetsBinding.instance.addObserver(this);

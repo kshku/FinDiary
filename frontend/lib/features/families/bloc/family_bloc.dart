@@ -11,11 +11,9 @@ class FamilyBloc extends Bloc<FamilyEvent, FamilyState> {
   final FamilyGrpcService _familyGrpcService;
 
   FamilyBloc({
-    required FamilyDao familyDao,
-    required FamilyGrpcService familyGrpcService,
-  })  : _familyDao = familyDao,
-        _familyGrpcService = familyGrpcService,
-        super(const FamilyInitial()) {
+    required this._familyDao,
+    required this._familyGrpcService,
+  }) : super(const FamilyInitial()) {
     on<FamiliesRequested>(_onRequested);
     on<FamilyCreated>(_onCreated);
   }
