@@ -56,6 +56,23 @@ void main() {
     );
 
     blocTest<TransactionListBloc, TransactionListState>(
+      'requests transactions with family scope',
+      setUp: () {
+        when(() => mockTransactionDao.listTransactions(familyId: 'fam-1'))
+            .thenAnswer((_) async => []);
+      },
+      build: () => TransactionListBloc(
+        transactionDao: mockTransactionDao,
+        syncEngine: mockSyncEngine,
+      ),
+      act: (b) => b.add(const TransactionListRequested(familyId: 'fam-1')),
+      expect: () => [
+        const TransactionListLoading(),
+        isA<TransactionListLoaded>(),
+      ],
+    );
+
+    blocTest<TransactionListBloc, TransactionListState>(
       'filters by type on filter changed',
       setUp: () {
         when(() => mockTransactionDao.listTransactions(type: 'income'))
