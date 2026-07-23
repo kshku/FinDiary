@@ -25,7 +25,7 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<SharedPreferences>(() => prefs);
   sl.registerLazySingleton<ThemeCubit>(() => ThemeCubit(prefs));
 
-  final grpcClient = GrpcClient(host: 'localhost', port: 9090);
+  final grpcClient = GrpcClient();
   sl.registerLazySingleton<GrpcClient>(() => grpcClient);
 
   final tokenStorage = TokenStorage();
