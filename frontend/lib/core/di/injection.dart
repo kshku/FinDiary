@@ -16,6 +16,8 @@ import '../sync/sync_service.dart';
 import '../network/connectivity_notifier.dart';
 import '../sync/sync_engine.dart';
 import '../theme/app_theme.dart';
+import 'package:findiary/features/families/bloc/family_bloc.dart';
+import 'package:findiary/features/families/bloc/scope_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -37,6 +39,10 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<AuthService>(() => authService);
 
   sl.registerLazySingleton<FamilyGrpcService>(() => FamilyGrpcService(grpcClient));
+  sl.registerLazySingleton<FamilyBloc>(() => FamilyBloc(
+    familyDao: sl<FamilyDao>(),
+    familyGrpcService: sl<FamilyGrpcService>(),
+  ));
   sl.registerLazySingleton<CategoryGrpcService>(() => CategoryGrpcService(grpcClient));
   sl.registerLazySingleton<TransactionGrpcService>(() => TransactionGrpcService(grpcClient));
 

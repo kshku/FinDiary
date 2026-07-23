@@ -11,6 +11,11 @@ import 'features/dashboard/dashboard_page.dart';
 import 'features/transactions/transaction_list_page.dart';
 import 'features/categories/categories_page.dart';
 import 'features/settings/settings_page.dart';
+import 'features/families/families_page.dart';
+import 'features/families/family_detail_page.dart';
+import 'features/families/invitations_page.dart';
+import 'features/families/bloc/family_bloc.dart';
+import 'features/families/bloc/scope_cubit.dart';
 
 class FinDiaryApp extends StatelessWidget {
   const FinDiaryApp({super.key});
@@ -21,6 +26,8 @@ class FinDiaryApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (_) => AuthBloc(authService: sl<AuthService>())),
         BlocProvider(create: (_) => sl<ThemeCubit>()),
+        BlocProvider(create: (_) => ScopeCubit()),
+        BlocProvider(create: (_) => sl<FamilyBloc>()),
       ],
       child: BlocBuilder<ThemeCubit, ThemeData>(
         builder: (context, theme) => MaterialApp.router(
@@ -55,6 +62,9 @@ final _router = GoRouter(
         GoRoute(path: '/', builder: (_, __) => const DashboardPage()),
         GoRoute(path: '/transactions', builder: (_, __) => const TransactionListPage()),
         GoRoute(path: '/categories', builder: (_, __) => const CategoriesPage()),
+        GoRoute(path: '/families', builder: (_, __) => const FamiliesPage()),
+        GoRoute(path: '/families/:id', builder: (_, state) => FamilyDetailPage(familyId: state.pathParameters['id']!)),
+        GoRoute(path: '/invitations', builder: (_, __) => const InvitationsPage()),
         GoRoute(path: '/settings', builder: (_, __) => const SettingsPage()),
       ],
     ),
@@ -76,6 +86,7 @@ class _Shell extends StatelessWidget {
           NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Home'),
           NavigationDestination(icon: Icon(Icons.receipt_long_outlined), selectedIcon: Icon(Icons.receipt_long), label: 'Transactions'),
           NavigationDestination(icon: Icon(Icons.category_outlined), selectedIcon: Icon(Icons.category), label: 'Categories'),
+          NavigationDestination(icon: Icon(Icons.group_outlined), selectedIcon: Icon(Icons.group), label: 'Families'),
           NavigationDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: 'Settings'),
         ],
       ),
@@ -86,7 +97,8 @@ class _Shell extends StatelessWidget {
     final loc = GoRouterState.of(context).matchedLocation;
     if (loc.startsWith('/transactions')) return 1;
     if (loc.startsWith('/categories')) return 2;
-    if (loc.startsWith('/settings')) return 3;
+    if (loc.startsWith('/families')) return 3;
+    if (loc.startsWith('/settings')) return 4;
     return 0;
   }
 
@@ -95,7 +107,8 @@ class _Shell extends StatelessWidget {
       case 0: context.go('/');
       case 1: context.go('/transactions');
       case 2: context.go('/categories');
-      case 3: context.go('/settings');
+      case 3: context.go('/families');
+      case 4: context.go('/settings');
     }
   }
 }
