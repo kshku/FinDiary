@@ -7,6 +7,7 @@ import 'package:findiary/core/di/injection.dart';
 import 'package:findiary/core/grpc/dashboard_service.dart';
 import 'package:findiary/features/dashboard/widgets/monthly_chart.dart';
 import 'package:findiary/features/families/bloc/scope_cubit.dart';
+import 'package:findiary/features/families/widgets/scope_switcher.dart';
 import 'bloc/dashboard_bloc.dart';
 import 'bloc/dashboard_event.dart';
 import 'bloc/dashboard_state.dart';
@@ -55,7 +56,10 @@ class _DashboardViewState extends State<_DashboardView> {
         ));
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('FinDiary')),
+        appBar: AppBar(
+          title: const Text('FinDiary'),
+          actions: const [ScopeSwitcher()],
+        ),
         body: BlocBuilder<DashboardBloc, DashboardState>(
           builder: (context, state) {
             if (state is DashboardLoading) {
