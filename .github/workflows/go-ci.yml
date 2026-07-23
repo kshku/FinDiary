@@ -7,7 +7,6 @@ on:
     paths: ['backend/**']
   pull_request:
     branches: [main, develop]
-    paths: ['backend/**']
 
 env:
   GO_VERSION: '1.22'
