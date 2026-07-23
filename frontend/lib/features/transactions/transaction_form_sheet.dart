@@ -6,6 +6,7 @@ import 'package:findiary/core/database/database.dart';
 import 'package:findiary/core/database/daos/transaction_dao.dart';
 import 'package:findiary/core/database/daos/category_dao.dart';
 import 'package:findiary/core/di/injection.dart';
+import 'package:findiary/features/families/bloc/scope_cubit.dart';
 
 class TransactionFormSheet extends StatefulWidget {
   final Transaction? transaction;
@@ -64,12 +65,14 @@ class _TransactionFormSheetState extends State<TransactionFormSheet> {
     final dao = sl<TransactionDao>();
     final now = DateTime.now().toIso8601String();
     final id = widget.transaction?.id ?? const Uuid().v4();
+    final scope = sl<ScopeCubit>().state;
     await dao.upsertTransaction(TransactionsCompanion(
       id: Value(id),
       type: Value(_type),
       amount: Value(double.parse(_amountCtrl.text)),
       currency: const Value('INR'),
       categoryId: Value(_categoryId ?? ''),
+      familyId: Value(scope.isPersonal ? null : scope.scopeId),
       date: Value(_date),
       description: Value(_descCtrl.text),
       createdBy: Value(widget.transaction?.createdBy ?? ''),

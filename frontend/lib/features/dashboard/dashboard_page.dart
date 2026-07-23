@@ -6,6 +6,7 @@ import 'package:findiary/core/database/database.dart';
 import 'package:findiary/core/di/injection.dart';
 import 'package:findiary/core/grpc/dashboard_service.dart';
 import 'package:findiary/features/dashboard/widgets/monthly_chart.dart';
+import 'package:findiary/features/families/bloc/scope_cubit.dart';
 import 'bloc/dashboard_bloc.dart';
 import 'bloc/dashboard_event.dart';
 import 'bloc/dashboard_state.dart';
@@ -36,87 +37,88 @@ class _DashboardViewState extends State<_DashboardView> {
   @override
   void initState() {
     super.initState();
-    context.read<DashboardBloc>().add(const DashboardRequested());
+    final scope = context.read<ScopeCubit>().state;
+    context.read<DashboardBloc>().add(DashboardRequested(
+      scopeId: scope.isPersonal ? null : scope.scopeId,
+      scopeType: scope.scopeType,
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Scaffold(
-      appBar: AppBar(title: const Text('FinDiary')),
-      body: BlocBuilder<DashboardBloc, DashboardState>(
-        builder: (context, state) {
-          if (state is DashboardLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (state is DashboardLoaded) {
-            final fmt = NumberFormat.currency(symbol: '₹', decimalDigits: 2);
-            return RefreshIndicator(
-              onRefresh: () async {
-                context.read<DashboardBloc>().add(const DashboardRequested());
-              },
-              child: ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Total Balance',
-                            style: theme.textTheme.titleMedium
-                                ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            fmt.format(state.balance),
-                            style: theme.textTheme.headlineLarge
-                                ?.copyWith(fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            children: [
-                              _SummaryChip(
-                                label: 'Income',
-                                amount: state.totalIncome,
-                                color: Colors.green,
-                                fmt: fmt,
-                              ),
-                              const SizedBox(width: 12),
-                              _SummaryChip(
-                                label: 'Expense',
-                                amount: state.totalExpense,
-                                color: Colors.red,
-                                fmt: fmt,
-                              ),
-                            ],
-                          ),
-                        ],
+    return BlocListener<ScopeCubit, Scope>(
+      listener: (context, scope) {
+        context.read<DashboardBloc>().add(DashboardRequested(
+          scopeId: scope.isPersonal ? null : scope.scopeId,
+          scopeType: scope.scopeType,
+        ));
+      },
+      child: Scaffold(
+        appBar: AppBar(title: const Text('FinDiary')),
+        body: BlocBuilder<DashboardBloc, DashboardState>(
+          builder: (context, state) {
+            if (state is DashboardLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (state is DashboardLoaded) {
+              final fmt = NumberFormat.currency(symbol: '₹', decimalDigits: 2);
+              return RefreshIndicator(
+                onRefresh: () async {
+                  final scope = context.read<ScopeCubit>().state;
+                  context.read<DashboardBloc>().add(DashboardRequested(
+                    scopeId: scope.isPersonal ? null : scope.scopeId,
+                    scopeType: scope.scopeType,
+                  ));
+                },
+                child: ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Total Balance',
+                              style: theme.textTheme.titleMedium
+                                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              fmt.format(state.balance),
+                              style: theme.textTheme.headlineLarge
+                                  ?.copyWith(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                _SummaryChip(label: 'Income', amount: state.totalIncome, color: Colors.green, fmt: fmt),
+                                const SizedBox(width: 12),
+                                _SummaryChip(label: 'Expense', amount: state.totalExpense, color: Colors.red, fmt: fmt),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  MonthlyChart(summaries: state.monthlySummaries),
-                  const SizedBox(height: 24),
-                  Text('Recent Transactions', style: theme.textTheme.titleMedium),
-                  const SizedBox(height: 8),
-                  if (state.recentTransactions.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.all(32),
-                      child: Center(child: Text('No transactions yet')),
-                    )
-                  else
-                    ...state.recentTransactions.map(
-                      (t) => _TransactionRow(transaction: t, fmt: fmt),
-                    ),
-                ],
-              ),
-            );
-          }
-          return const SizedBox.shrink();
-        },
+                    const SizedBox(height: 24),
+                    MonthlyChart(summaries: state.monthlySummaries),
+                    const SizedBox(height: 24),
+                    Text('Recent Transactions', style: theme.textTheme.titleMedium),
+                    const SizedBox(height: 8),
+                    if (state.recentTransactions.isEmpty)
+                      const Padding(padding: EdgeInsets.all(32), child: Center(child: Text('No transactions yet')))
+                    else
+                      ...state.recentTransactions.map((t) => _TransactionRow(transaction: t, fmt: fmt)),
+                  ],
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     );
   }

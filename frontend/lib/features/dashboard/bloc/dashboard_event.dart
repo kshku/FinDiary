@@ -8,5 +8,11 @@ sealed class DashboardEvent extends Equatable {
 }
 
 final class DashboardRequested extends DashboardEvent {
-  const DashboardRequested();
+  final String? scopeId;
+  final String? scopeType;
+
+  const DashboardRequested({this.scopeId, this.scopeType});
+
+  @override
+  List<Object?> get props => [scopeId, scopeType];
 }

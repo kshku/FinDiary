@@ -19,9 +19,14 @@ final class TransactionListLoading extends TransactionListState {
 final class TransactionListLoaded extends TransactionListState {
   final List<Transaction> transactions;
   final String? typeFilter;
+  final String? familyId;
 
-  const TransactionListLoaded({required this.transactions, this.typeFilter});
+  const TransactionListLoaded({
+    required this.transactions,
+    this.typeFilter,
+    this.familyId,
+  });
 
   @override
-  List<Object?> get props => [transactions, typeFilter];
+  List<Object?> get props => [transactions, typeFilter, familyId];
 }

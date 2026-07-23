@@ -23,8 +23,12 @@ class TransactionListBloc extends Bloc<TransactionListEvent, TransactionListStat
     try {
       final type =
           state is TransactionListLoaded ? (state as TransactionListLoaded).typeFilter : null;
-      final transactions = await _transactionDao.listTransactions(type: type);
-      emit(TransactionListLoaded(transactions: transactions, typeFilter: type));
+      final transactions = await _transactionDao.listTransactions(
+        familyId: event.familyId, type: type,
+      );
+      emit(TransactionListLoaded(
+        transactions: transactions, typeFilter: type, familyId: event.familyId,
+      ));
     } catch (_) {
       emit(TransactionListLoaded(transactions: [], typeFilter: null));
     }
@@ -36,10 +40,18 @@ class TransactionListBloc extends Bloc<TransactionListEvent, TransactionListStat
   ) async {
     emit(const TransactionListLoading());
     try {
-      final transactions = await _transactionDao.listTransactions(type: event.type);
-      emit(TransactionListLoaded(transactions: transactions, typeFilter: event.type));
+      final familyId = state is TransactionListLoaded
+          ? (state as TransactionListLoaded).familyId : null;
+      final transactions = await _transactionDao.listTransactions(
+        familyId: familyId, type: event.type,
+      );
+      emit(TransactionListLoaded(
+        transactions: transactions, typeFilter: event.type, familyId: familyId,
+      ));
     } catch (_) {
-      emit(TransactionListLoaded(transactions: [], typeFilter: event.type));
+      emit(TransactionListLoaded(
+        transactions: [], typeFilter: event.type,
+      ));
     }
   }
 }
