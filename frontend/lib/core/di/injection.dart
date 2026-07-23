@@ -17,7 +17,6 @@ import '../network/connectivity_notifier.dart';
 import '../sync/sync_engine.dart';
 import '../theme/app_theme.dart';
 import 'package:findiary/features/families/bloc/family_bloc.dart';
-import 'package:findiary/features/families/bloc/scope_cubit.dart';
 
 final sl = GetIt.instance;
 
