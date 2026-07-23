@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:findiary/core/database/daos/transaction_dao.dart';
 import 'package:findiary/core/sync/sync_engine.dart';
 import 'package:findiary/core/di/injection.dart';
+import 'package:findiary/features/families/bloc/scope_cubit.dart';
 import 'bloc/transaction_list_bloc.dart';
 import 'bloc/transaction_list_event.dart';
 import 'bloc/transaction_list_state.dart';
@@ -35,7 +36,10 @@ class _TransactionListViewState extends State<_TransactionListView> {
   @override
   void initState() {
     super.initState();
-    context.read<TransactionListBloc>().add(const TransactionListRequested());
+    final scope = context.read<ScopeCubit>().state;
+    context.read<TransactionListBloc>().add(TransactionListRequested(
+      familyId: scope.isPersonal ? null : scope.scopeId,
+    ));
   }
 
   @override
@@ -50,7 +54,10 @@ class _TransactionListViewState extends State<_TransactionListView> {
           if (state is TransactionListLoaded) {
             return RefreshIndicator(
               onRefresh: () async {
-                context.read<TransactionListBloc>().add(const TransactionListRequested());
+                final scope = context.read<ScopeCubit>().state;
+                context.read<TransactionListBloc>().add(TransactionListRequested(
+                  familyId: scope.isPersonal ? null : scope.scopeId,
+                ));
               },
               child: CustomScrollView(
                 slivers: [

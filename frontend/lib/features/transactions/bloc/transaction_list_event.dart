@@ -8,7 +8,10 @@ sealed class TransactionListEvent extends Equatable {
 }
 
 final class TransactionListRequested extends TransactionListEvent {
-  const TransactionListRequested();
+  final String? familyId;
+  const TransactionListRequested({this.familyId});
+  @override
+  List<Object?> get props => [familyId];
 }
 
 final class TransactionListFilterChanged extends TransactionListEvent {

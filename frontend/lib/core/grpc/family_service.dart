@@ -69,4 +69,11 @@ class FamilyGrpcService {
     final response = await _stub.listMembers(request);
     return response.members;
   }
+
+  Future<void> removeMember(String familyId, String userId) async {
+    final request = RemoveMemberRequest()
+      ..familyId = familyId
+      ..userId = userId;
+    await _stub.removeMember(request);
+  }
 }

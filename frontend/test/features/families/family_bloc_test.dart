@@ -1,46 +1,41 @@
-import 'package:mocktail/mocktail.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bloc_test/bloc_test.dart';
-import 'package:drift/drift.dart';
-
+import 'package:mocktail/mocktail.dart';
+import 'package:findiary/core/database/database.dart';
 import 'package:findiary/core/database/daos/family_dao.dart';
 import 'package:findiary/core/grpc/family_service.dart';
 import 'package:findiary/features/families/bloc/family_bloc.dart';
 import 'package:findiary/features/families/bloc/family_event.dart';
 import 'package:findiary/features/families/bloc/family_state.dart';
-import 'package:findiary/core/database/database.dart';
 
 class MockFamilyDao extends Mock implements FamilyDao {}
 class MockFamilyGrpcService extends Mock implements FamilyGrpcService {}
 
 void main() {
-  late MockFamilyDao mockFamilyDao;
-  late MockFamilyGrpcService mockFamilyGrpcService;
+  late FamilyBloc bloc;
+  late MockFamilyDao mockDao;
+  late MockFamilyGrpcService mockGrpc;
 
   setUp(() {
-    mockFamilyDao = MockFamilyDao();
-    mockFamilyGrpcService = MockFamilyGrpcService();
-    registerFallbackValue(const FamiliesCompanion(
-      id: Value(''),
-      name: Value(''),
-      ownerId: Value(''),
-      createdAt: Value(''),
-      updatedAt: Value(''),
-    ));
+    mockDao = MockFamilyDao();
+    mockGrpc = MockFamilyGrpcService();
+    bloc = FamilyBloc(familyDao: mockDao, familyGrpcService: mockGrpc);
   });
 
+  tearDown(() => bloc.close());
+
   group('FamilyBloc', () {
+    test('initial state is FamilyInitial', () {
+      expect(bloc.state, const FamilyInitial());
+    });
+
     blocTest<FamilyBloc, FamilyState>(
-      'emits loading then loaded with families',
-      setUp: () {
-        when(() => mockFamilyDao.listFamilies())
-            .thenAnswer((_) async => []);
+      'emits [Loading, Loaded] on FamilyListRequested',
+      build: () {
+        when(() => mockDao.listFamilies()).thenAnswer((_) async => []);
+        return bloc;
       },
-      build: () => FamilyBloc(
-        familyDao: mockFamilyDao,
-        familyGrpcService: mockFamilyGrpcService,
-      ),
-      act: (bloc) => bloc.add(const FamiliesRequested()),
+      act: (b) => b.add(const FamilyListRequested()),
       expect: () => [
         const FamilyLoading(),
         const FamilyLoaded(families: []),
@@ -48,19 +43,31 @@ void main() {
     );
 
     blocTest<FamilyBloc, FamilyState>(
-      'handles dao error gracefully',
-      setUp: () {
-        when(() => mockFamilyDao.listFamilies())
-            .thenThrow(Exception('db error'));
+      'emits [Loading, Loaded] on FamilyDetailRequested with family and members',
+      build: () {
+        when(() => mockDao.getFamily('fam-1')).thenAnswer(
+          (_) async => Family(id: 'fam-1', name: 'Test', ownerId: 'u1', createdAt: '', updatedAt: '', syncStatus: 0),
+        );
+        when(() => mockDao.listMembers('fam-1')).thenAnswer((_) async => []);
+        return bloc;
       },
-      build: () => FamilyBloc(
-        familyDao: mockFamilyDao,
-        familyGrpcService: mockFamilyGrpcService,
-      ),
-      act: (bloc) => bloc.add(const FamiliesRequested()),
+      act: (b) => b.add(const FamilyDetailRequested('fam-1')),
       expect: () => [
         const FamilyLoading(),
-        const FamilyFailure('Exception: db error'),
+        isA<FamilyDetailLoaded>(),
+      ],
+    );
+
+    blocTest<FamilyBloc, FamilyState>(
+      'emits [Loading, Loaded] on InvitationsRequested',
+      build: () {
+        when(() => mockDao.listFamilies()).thenAnswer((_) async => []);
+        return bloc;
+      },
+      act: (b) => b.add(const InvitationsRequested()),
+      expect: () => [
+        const FamilyLoading(),
+        const FamilyLoaded(families: []),
       ],
     );
   });

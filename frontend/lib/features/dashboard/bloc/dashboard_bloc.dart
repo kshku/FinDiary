@@ -22,16 +22,27 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   ) async {
     emit(const DashboardLoading());
     try {
-      final income = await _transactionDao.sumTransactions(type: 'income');
-      final expense = await _transactionDao.sumTransactions(type: 'expense');
-      final recent = await _transactionDao.listTransactions(limit: 10);
+      final income = await _transactionDao.sumTransactions(
+        type: 'income', familyId: event.scopeId,
+      );
+      final expense = await _transactionDao.sumTransactions(
+        type: 'expense', familyId: event.scopeId,
+      );
+      final recent = await _transactionDao.listTransactions(
+        limit: 10, familyId: event.scopeId,
+      );
 
       List<MonthlySummary> monthly = [];
-      try {
-        final serverData = await _dashboardGrpcService.getDashboard();
-        monthly = serverData.monthly;
-      } catch (_) {
-        // Offline — use empty monthly data
+      if (event.scopeId != null) {
+        try {
+          final serverData = await _dashboardGrpcService.getDashboard(familyId: event.scopeId);
+          monthly = serverData.monthly;
+        } catch (_) {}
+      } else {
+        try {
+          final serverData = await _dashboardGrpcService.getDashboard();
+          monthly = serverData.monthly;
+        } catch (_) {}
       }
 
       emit(DashboardLoaded(

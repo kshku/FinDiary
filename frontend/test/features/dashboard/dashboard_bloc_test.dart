@@ -105,6 +105,29 @@ void main() {
     );
 
     blocTest<DashboardBloc, DashboardState>(
+      'requests dashboard with family scope',
+      setUp: () {
+        when(() => mockTransactionDao.sumTransactions(type: 'income', familyId: 'fam-1'))
+            .thenAnswer((_) async => 1000.0);
+        when(() => mockTransactionDao.sumTransactions(type: 'expense', familyId: 'fam-1'))
+            .thenAnswer((_) async => 500.0);
+        when(() => mockTransactionDao.listTransactions(limit: 10, familyId: 'fam-1'))
+            .thenAnswer((_) async => []);
+        when(() => mockDashboardGrpcService.getDashboard(familyId: 'fam-1'))
+            .thenAnswer((_) async => GetDashboardResponse());
+      },
+      build: () => DashboardBloc(
+        transactionDao: mockTransactionDao,
+        dashboardGrpcService: mockDashboardGrpcService,
+      ),
+      act: (b) => b.add(const DashboardRequested(scopeId: 'fam-1', scopeType: 'family')),
+      expect: () => [
+        const DashboardLoading(),
+        isA<DashboardLoaded>(),
+      ],
+    );
+
+    blocTest<DashboardBloc, DashboardState>(
       'still loads when server is offline',
       setUp: () {
         when(() => mockTransactionDao.sumTransactions(type: 'income'))
